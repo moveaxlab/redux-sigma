@@ -1,4 +1,4 @@
-<h1>redux sigma <img src="./assets/Artboard.png" alt="redux-sigma" width="80px" /></h1>
+<h1>redux sigma <img src="./assets/Artboard.png" alt="redux-sigma" height="30px" /></h1>
 
 `redux-sigma` is a library that allows implementation of state machines on top
 of `redux` and `redux-saga`.
@@ -7,4 +7,4 @@ of `redux` and `redux-saga`.
 
 ---
 
-developed with :heart: by [moveax](https://moveax.it/)
+<p>developed with :heart: by <a href="https://moveax.it/">moveax</a></p>

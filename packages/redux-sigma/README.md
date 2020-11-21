@@ -622,4 +622,4 @@ class MyStateMachine extends StateMachine {
 
 ---
 
-developed with :heart: by [moveax](https://moveax.it/)
+<p>developed with :heart: by <a href="https://moveax.it/">moveax</a></p>
