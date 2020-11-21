@@ -158,7 +158,7 @@ The `Context` must be an object.
 in the `transitions` and `reactions` section of the specification.
 - The `States` generic determines what states must be used as keys in the specification.
 - The `StateMachineNames` generic restricts what value can be assigned to the `name` of the state machine.
-- For more details on `Context`, see later.
+- For more details on `Context`, see [later](#context-or-extended-state).
 
 By default, the state machine can have any string as `Events`, `States`, and `StateMachineNames`.
 The `Context` defaults to an empty object.
@@ -267,6 +267,49 @@ Updating the context via `setContext` updates its value stored inside `redux`.
 
 Context is available in all activities and in transition guards.
 Transition guards cannot mutate the context.
+
+### Initial context
+
+If a state machine requires some information in its context on start,
+you can make that field required in the context definition:
+
+```typescript
+interface Context {
+  counter: number;
+}
+
+class MyStateMachine extends StateMachine<Events, States, StateMachineNames, Context> {
+  /* ... */
+}
+```
+
+To start this state machine you are now required to provide an initial context:
+
+```typescript
+store.dispatch(myStateMachine.start({ counter: 0 }));
+```
+
+If the context of your state machine is filled during the state machine lifecycle,
+and there is no reasonable value for the initial context, then make all fields optional:
+
+```typescript
+interface Context {
+  counter?: number;
+}
+
+class MyStateMachine extends StateMachine<Events, States, StateMachineNames, Context> {
+  /* ... */
+}
+```
+
+Now you are not required to provide an initial context (but you still can):
+
+```typescript
+// this works
+store.dispatch(myStateMachine.start({}));
+// this works too
+store.dispatch(myStateMachine.start({ counter: 5 }));
+```
 
 ## State machines specification
 
@@ -430,7 +473,7 @@ this command will run if that specific transition is triggered.
 
 All `guard`s receive in input the event that could trigger the transition,
 and the current `context` of the state machine.
-More on the context later.
+You can learn more about the context in its [section](#context-or-extended-state).
 
 ### `reactions` or internal transitions
 
@@ -530,3 +573,49 @@ There is no guarantee about the order in which `onEntry` and `onExit` activities
 inside a state.
 
 ### Sub state machines
+
+In state machine, each state represents a configuration of your application in which an invariant is holding.
+Sometimes a single state can be subdivided into additional states, or configurations.
+To accomplish this we rely on _sub state machines_.
+
+```typescript
+import { mySubStateMachine } from './my-sub-state-machine';
+
+class MyStateMachine extends StateMachine {
+  spec = {
+    state_1: {
+      subMachines: [mySubStateMachine],
+    },
+  };
+}
+```
+
+To add a sub state machine to a state, define the sub state machine
+and add its instance to the `subMachines` field of the parent state machine.
+
+This syntax only works with sub state machines that use the default context,
+or that have no required fields in their context.
+
+If your sub state machine requires some info in the initial context (see the [context section](#initial-context)),
+you must build the initial context from the context of the parent state machine,
+and bind it to the sub state machine:
+
+```typescript
+import { StateMachine, bindStm } from 'redux-sigma';
+import { mySubStateMachine } from './my-sub-state-machine';
+
+class MyStateMachine extends StateMachine {
+  spec = {
+    state_1: {
+      subMachines: [bindStm(mySubStateMachine, this.buildContext)],
+    },
+  };
+
+  buildContext() {
+    // you can access the context of MyStateMachine from here
+    return {
+      counter: 5,
+    };
+  };
+}
+```
