@@ -619,3 +619,7 @@ class MyStateMachine extends StateMachine {
   };
 }
 ```
+
+---
+
+developed with :heart: by [moveax](https://moveax.it/)
