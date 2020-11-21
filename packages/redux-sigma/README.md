@@ -108,7 +108,7 @@ const rootReducer = combineReducers({
 });
 ```
 
-### State machines specification
+## State machines specification
 
 The `spec` field of each state machine is an object.
 Its keys represent the state names (or identifiers) of your state machine:
@@ -141,7 +141,7 @@ class MyStateMachine extends StateMachine {
 
 All fields are optional, and are described in the detail in the following sections.
 
-#### `transitions`
+### `transitions`
 
 Transitions are the core of all state machines: they define how the state of the state machine
 evolves in response to events that happen in your application.
@@ -162,7 +162,18 @@ class MyStateMachine extends StateMachine {
 }
 ```
 
-##### Running activities on transition
+The transition from `state_1` to `state_2` will be triggered by any `redux` action
+having a `type` equal to `'event_1'`:
+
+```typescript
+// this action would trigger the transition
+store.dispatch({ type: 'event_1' });
+
+// this action would trigger the transition too
+store.dispatch({ type: 'event_1', payload: { value: 'something something'} });
+```
+
+#### Running activities on transition
 
 Sometimes you may want to perform an activity when doing a specific transition.
 `redux-sigma` allows you to specify the activity that must be performed on a given transition:
@@ -197,11 +208,11 @@ They receive in input the event that triggered the transition.
 There is no guarantee on the order in which commands are executed when performing the transition,
 but all commands will execute to completion before entering the `target` state.
 
-##### Conditional transitions: `guard`s
+#### Conditional transitions: `guard`s
 
 For more advanced use-cases, you may want to perform a transition when receiving an event
 but _only_ if some conditions are met.
-This is know as a **guard**.
+This is know as a **guard** in UML State Machines and StateCharts.
 
 Guards can be implemented in `redux-sigma` with this syntax:
 
@@ -249,7 +260,7 @@ All `guard`s receive in input the event that could trigger the transition,
 and the current `context` of the state machine.
 More on the context later.
 
-#### `onEntry` and `onExit` activities
+### `onEntry` and `onExit` activities
 
 The `onEntry` and `onExit` fields are an array that mixes functions and generators (sagas).
 They receive nothing in input and must not return anything.
@@ -271,7 +282,8 @@ class MyStateMachine extends StateMachine {
 The `onEntry` activities will start running as soon as your state machine enters the state.
 While `onEntry` activities are running, the state machine can change state if it receives
 one of the events described among its `transitions`.
-If a transition happens, `onEntry` activities will be stopped (using the `cancel` effect of `redux-saga`).
+If a transition happens, `onEntry` activities will be stopped
+(using the [`cancel`](https://redux-saga.js.org/docs/api/#canceltask) effect of `redux-saga`).
 
 The `onExit` activities will run when your state machine exits the state,
 or when your state machine is stopped while in that specific state.
