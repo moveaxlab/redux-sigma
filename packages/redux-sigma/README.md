@@ -154,14 +154,11 @@ class MyStateMachine extends StateMachine<Events, States, StateMachineNames, Con
 The `Events`, `States`, and `StateMachineNames` generics must all be string-like.
 The `Context` must be an object.
 
-The `Events` generic restricts what action types can be used as keys
+- The `Events` generic restricts what action types can be used as keys
 in the `transitions` and `reactions` section of the specification.
-
-The `States` generic determines what states must be used as keys in the specification.
-
-The `StateMachineNames` generic restricts what value can be assigned to the `name` of the state machine.
-
-For more details on `Context`, see later.
+- The `States` generic determines what states must be used as keys in the specification.
+- The `StateMachineNames` generic restricts what value can be assigned to the `name` of the state machine.
+- For more details on `Context`, see later.
 
 By default, the state machine can have any string as `Events`, `States`, and `StateMachineNames`.
 The `Context` defaults to an empty object.
@@ -215,6 +212,20 @@ class MyStateMachine extends StateMachine<Events, States, StateMachineNames> {
 }
 ```
 
+## Activities
+
+The state machines in `redux-sigma` can perform actions based on their state
+and on the events they receive.
+
+Actions or activities are defined using simple functions or using sagas.
+
+In the majority of cases, you will need only the following `redux-saga` effects:
+
+- `call`, to call remote endpoints or other services
+- `select`, to read data from the `redux` store
+- `put`, to send events to other state machines or actions to `redux` reducers
+- `delay`, to delay the execution of successive actions
+
 ## `context` or extended state
 
 Relying only on the states to implement your flows cannot be enough for complex flows.
@@ -222,8 +233,40 @@ State machines allow you to define an _extended state_, or _context_ of your sta
 that can hold additional information for each state.
 
 A simple example would be a state machine containing a counter:
-modeling each possible value of the counter as a different state is typically discouraged.
+modeling each possible value of the counter as a different state is an anti-pattern.
 The value of the counter is an example of something that can be stored in the extended state.
+
+Each state machine implemented with `redux-sigma` has a context available in its activities.
+
+```typescript
+class MyStateMachine extends StateMachine {
+  *activity() {
+    // values can be retrieved from the context
+    const counter = this.context.counter;
+    // the context is immutable: to update it, use the setContext method
+    // the setContext accepts an immer-style callback...
+    yield* this.setContext(ctx => {
+      ctx.counter += 1;
+    });
+    // ...or a new value for the whole context
+    yield* this.setContext({
+      counter: 5,
+    });
+  }
+}
+```
+
+To change the context, use the [`yield*` generator delegation expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield*)
+in combination with the `setContext` method.
+
+The `setContext` method allows you to override the whole context with a new value,
+or to use an [`immer`-style callback](https://immerjs.github.io/immer/docs/produce) to mutate the context.
+
+The context is immutable: you must always use the `setContext` method to update it.
+Updating the context via `setContext` updates its value stored inside `redux`.
+
+Context is available in all activities and in transition guards.
+Transition guards cannot mutate the context.
 
 ## State machines specification
 
@@ -279,6 +322,10 @@ class MyStateMachine extends StateMachine {
 }
 ```
 
+Simple transitions can be illustrated as follows:
+
+![Simple transition](./assets/simple-transition.png)
+
 The transition from `state_1` to `state_2` will be triggered by any `redux` action
 having a `type` equal to `'event_1'`:
 
@@ -316,6 +363,10 @@ class MyStateMachine extends StateMachine {
   }
 }
 ```
+
+Transitions paired with commands can be represented in this way:
+
+![Simple transition](./assets/transition-with-command.png)
 
 The `target` in the `event_2` transition identifies the state that your state machine will reach
 after executing the `command`.
@@ -361,6 +412,10 @@ class MyStateMachine extends StateMachine {
 }
 ```
 
+Guarded transitions are represented with the guard condition between square brackets:
+
+![Simple transition](./assets/guarded-transitions.png)
+
 For `event_1`, the transition will be triggered only if the `guard` function returns `true`,
 otherwise nothing will happen.
 
@@ -378,6 +433,69 @@ and the current `context` of the state machine.
 More on the context later.
 
 ### `reactions` or internal transitions
+
+Sometimes you want your state machine to perform some action in response to an event
+_without_ changing the state.
+In `redux-sigma` this is possible via _reactions_ or internal transitions.
+
+The `reactions` are defined as a map between event types and functions or generators (saga).
+Reaction activities will receive in input the event that triggered the transition.
+
+```typescript
+class MyStateMachine {
+  spec = {
+    state_1: {
+      reactions: {
+        event_1: this.reaction,
+      },
+    },
+  };
+
+  *reaction(event) {
+    // use the triggering event in your reaction
+  }
+}
+```
+
+By default, while the state machine is in `state_1`, each action of type `event_1`
+dispatched to the `redux` store will trigger the reaction.
+If several events that trigger a reaction are dispatched one after another,
+one call to the reaction will be enqueued for each event.
+Each call waits for the previous calls to complete before running.
+
+You may find yourself needing a different behaviour than the default.
+`redux-sigma` allows three different reaction policies:
+
+- the reaction policy `all` (the default) processes all events that can trigger
+  a reaction sequentially, in the order they are received
+- the reaction policy `first` processes the first event it receives, and ignores
+  the same event until processing of the first event is complete
+  (processing is resumed once the first event completes)
+- the reaction policy `last` processes all events it receives, but if a new event
+  is receive while another event is processing, the reaction that started first
+  is stopped, and a new reaction is started for the new event
+
+This image illustrates the three policies:
+
+![Reaction policies illustration](./assets/policies.png)
+
+Reaction policies can be specified in the following way:
+
+```typescript
+import { StateMachine, all, first, last } from 'redux-sigma';
+
+class MyStateMachine extends StateMachine {
+  spec = {
+    state_1: {
+      reactions: {
+        event_1: all(this.reaction),
+        event_2: first(this.reaction),
+        event_3: last(this.reaction),
+      },
+    },
+  };
+}
+```
 
 ### `onEntry` and `onExit` activities
 
