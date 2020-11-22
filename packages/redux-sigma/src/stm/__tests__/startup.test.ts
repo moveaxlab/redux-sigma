@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
-import { StateMachine } from '../running';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
+import { StateMachine } from '../StateMachine';
 import { DuplicateStateMachineError } from '../startup/starter';
 import { Events, StateMachineNames, States } from './definitions.utils';
 import { stateMachineStarterSaga } from '../startup';
@@ -33,7 +33,7 @@ test('tests that starting/stopping an unknown STM does not break stuff', async (
     [stm.name]: stm.stateReducer,
   });
 
-  const tester = new SagaTester<ReturnType<typeof reducer>>({
+  const tester = new SagaTester({
     reducers: reducer,
   });
 
@@ -68,11 +68,8 @@ test('test that starting a saga twice throws an error', async () => {
     [stm.name]: stm.stateReducer,
   });
 
-  const tester = new SagaTester<ReturnType<typeof reducer>>({
+  const tester = new SagaTester({
     reducers: reducer,
-    options: {
-      onError: () => {},
-    },
   });
 
   const task = tester.start(stateMachineStarterSaga, stm, stm);

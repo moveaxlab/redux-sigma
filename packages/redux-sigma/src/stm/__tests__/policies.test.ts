@@ -1,8 +1,9 @@
-import { StateMachine } from '../running';
+/* eslint-disable-next-line max-classes-per-file */
+import { StateMachine } from '../StateMachine';
 import { Events, StateMachineNames, States } from './definitions.utils';
 import { put, delay, call } from '@redux-saga/core/effects';
 import { combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
 import waitForExpect from 'wait-for-expect';
 import { stateMachineStarterSaga } from '../startup';
 import { first, last, all } from '../..';
@@ -178,7 +179,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [stm.name]: stm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, stm);
       tester.dispatch(stm.start({}));
       tester.dispatch(payloadEvent(1));
@@ -200,7 +201,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [delayedStm.name]: delayedStm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, delayedStm);
       tester.dispatch(delayedStm.start({}));
       for (let i = 0; i < 3; i++) {
@@ -242,7 +243,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [heavyStm.name]: heavyStm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, heavyStm);
       tester.dispatch(heavyStm.start({}));
       for (let i = 0; i < 50; i++) {
@@ -275,7 +276,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [delayedStm.name]: delayedStm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, delayedStm);
       tester.dispatch(delayedStm.start({}));
       for (let i = 0; i < 3; i++) {
@@ -301,7 +302,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [heavyStm.name]: heavyStm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, heavyStm);
       tester.dispatch(heavyStm.start({}));
       for (let i = 0; i < 50; i++) {
@@ -329,7 +330,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [delayedStm.name]: delayedStm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, delayedStm);
       tester.dispatch(delayedStm.start({}));
       for (let i = 0; i < 50; i++) {
@@ -358,7 +359,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [heavyStm.name]: heavyStm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, heavyStm);
       tester.dispatch(heavyStm.start({}));
       for (let i = 0; i < 2; i++) {
@@ -384,7 +385,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [stm.name]: stm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, stm);
       tester.dispatch(stm.start({ n: 0 }));
 
@@ -408,7 +409,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [stm.name]: stm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, stm);
       tester.dispatch(stm.start({ n: 0 }));
 
@@ -432,7 +433,7 @@ describe('Test reaction policies', () => {
       const reducers = combineReducers({
         [stm.name]: stm.stateReducer,
       });
-      const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+      const tester = new SagaTester({ reducers });
       tester.start(stateMachineStarterSaga, stm);
       tester.dispatch(stm.start({ n: 0 }));
 

@@ -3,8 +3,10 @@
 `redux-sigma` is a library that allows implementation of state machines on top
 of `redux` and `redux-saga`.
 
+## Resources
+
 - [Core library readme](./pacakages/redux-sigma/)
 
 ---
 
-<p>developed with :heart: by <a href="https://moveax.it/">moveax</a></p>
+developed with :heart: by [moveax](https://moveax.it/)

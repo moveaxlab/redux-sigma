@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
-import { StateMachine } from '../running';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
+import { StateMachine } from '../StateMachine';
 import { Events, StateMachineNames, States } from './definitions.utils';
 
 interface Context {
@@ -31,7 +31,7 @@ test('tests that storage works correctly', async () => {
     [stm.name]: stm.stateReducer,
   });
 
-  const tester = new SagaTester<ReturnType<typeof reducer>>({
+  const tester = new SagaTester({
     reducers: reducer,
   });
 

@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
-import { StateMachine } from '../running';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
+import { StateMachine } from '../StateMachine';
 import { stateMachineStarterSaga } from '../startup';
 import { Events, StateMachineNames, States } from './definitions.utils';
 import { put } from 'redux-saga/effects';
@@ -56,7 +56,7 @@ test('test activity that triggers a transition when entering a state', async () 
     [stm.name]: stm.stateReducer,
   });
 
-  const tester = new SagaTester<ReturnType<typeof reducer>>({
+  const tester = new SagaTester({
     reducers: reducer,
   });
 
@@ -76,7 +76,7 @@ test('test activity that takes an event emitted before entering a state', async 
     [stm.name]: stm.stateReducer,
   });
 
-  const tester = new SagaTester<ReturnType<typeof reducer>>({
+  const tester = new SagaTester({
     reducers: reducer,
   });
 

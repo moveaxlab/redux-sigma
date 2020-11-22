@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
 import { storeStmContextActionType } from '../../constants';
-import { StateMachine } from '../running';
+import { StateMachine } from '../StateMachine';
 import { stateMachineStarterSaga } from '../startup';
 import { Events, StateMachineNames, States } from './definitions.utils';
 import { call, put } from 'redux-saga/effects';
@@ -86,7 +86,7 @@ it('tests that context is initialized and destroyed correctly', async () => {
   const reducers = combineReducers({
     [stm.name]: stm.stateReducer,
   });
-  const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+  const tester = new SagaTester({ reducers });
   tester.start(stateMachineStarterSaga, stm);
 
   expect(tester.getState()[stm.name].context).toBeUndefined();
@@ -115,7 +115,7 @@ it('tests that context is set while STM is active', async () => {
   const reducers = combineReducers({
     [stm.name]: stm.stateReducer,
   });
-  const tester = new SagaTester<ReturnType<typeof reducers>>({ reducers });
+  const tester = new SagaTester({ reducers });
   tester.start(stateMachineStarterSaga, stm);
 
   expect(tester.getState()[stm.name].state).toBeNull();

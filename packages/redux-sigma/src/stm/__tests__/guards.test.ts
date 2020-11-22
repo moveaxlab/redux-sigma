@@ -1,6 +1,7 @@
+/* eslint-disable max-classes-per-file */
 import { Action, combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
-import { StateMachine } from '../running';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
+import { StateMachine } from '../StateMachine';
 import { stateMachineStarterSaga } from '../startup';
 import {
   Events,
@@ -129,7 +130,7 @@ describe('test STM with guards', () => {
     const reducers = combineReducers({
       [guardedStm.name]: guardedStm.stateReducer,
     });
-    const sagaTester = new SagaTester<ReturnType<typeof reducers>>({
+    const sagaTester = new SagaTester({
       reducers,
     });
     sagaTester.start(stateMachineStarterSaga, guardedStm);
@@ -170,7 +171,7 @@ describe('test STM with guards', () => {
     const reducers = combineReducers({
       [guardedStm.name]: guardedStm.stateReducer,
     });
-    const sagaTester = new SagaTester<ReturnType<typeof reducers>>({
+    const sagaTester = new SagaTester({
       reducers,
     });
     sagaTester.start(stateMachineStarterSaga, guardedStm);
@@ -205,7 +206,7 @@ describe('test STM with guards', () => {
       [stm.name]: stm.stateReducer,
     });
 
-    const tester = new SagaTester<ReturnType<typeof reducers>>({
+    const tester = new SagaTester({
       reducers,
     });
 

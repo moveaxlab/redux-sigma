@@ -1,7 +1,6 @@
-import { StateMachine } from './stm/running';
+import { StateMachine } from './stm/StateMachine';
 import { stateMachineStarterSaga } from './stm/startup';
 import { StateMachineSpec, StateMachineInterface } from './types';
-import { FirstArgumentType } from './utils/typeInference';
 import { not } from './utils/guards';
 import { all, first, last } from './utils/policies';
 
@@ -10,7 +9,6 @@ export {
   StateMachineInterface,
   StateMachineSpec,
   stateMachineStarterSaga,
-  FirstArgumentType,
   not,
   all,
   first,

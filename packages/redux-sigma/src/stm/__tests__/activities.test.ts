@@ -1,6 +1,7 @@
+/* eslint-disable max-classes-per-file */
 import { combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
-import { StateMachine } from '../running';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
+import { StateMachine } from '../StateMachine';
 import { stateMachineStarterSaga } from '../startup';
 import {
   Events,
@@ -143,7 +144,7 @@ describe('Test running a STM', () => {
     const reducers = combineReducers({
       [MultipleCommandsSTM.name]: multipleCommandsSTM.stateReducer,
     });
-    const sagaTester = new SagaTester<ReturnType<typeof reducers>>({
+    const sagaTester = new SagaTester({
       reducers,
     });
     sagaTester.start(stateMachineStarterSaga, multipleCommandsSTM, subStm);
@@ -227,7 +228,7 @@ describe('Test running a STM', () => {
     const reducers = combineReducers({
       [baseStm.name]: baseStm.stateReducer,
     });
-    const sagaTester = new SagaTester<ReturnType<typeof reducers>>({
+    const sagaTester = new SagaTester({
       reducers,
     });
     sagaTester.start(stateMachineStarterSaga, baseStm, subStm);
@@ -249,7 +250,7 @@ describe('Test running a STM', () => {
     const reducers = combineReducers({
       [baseStm.name]: baseStm.stateReducer,
     });
-    const sagaTester = new SagaTester<ReturnType<typeof reducers>>({
+    const sagaTester = new SagaTester({
       reducers,
     });
     sagaTester.start(stateMachineStarterSaga, baseStm, subStm);
@@ -330,7 +331,7 @@ describe('Test running a STM', () => {
       const reducers = combineReducers({
         [baseStm.name]: baseStm.stateReducer,
       });
-      const sagaTester = new SagaTester<ReturnType<typeof reducers>>({
+      const sagaTester = new SagaTester({
         reducers,
       });
       sagaTester.start(stateMachineStarterSaga, baseStm, subStm);
@@ -365,7 +366,7 @@ describe('Test running a STM', () => {
       const reducers = combineReducers({
         [baseStm.name]: baseStm.stateReducer,
       });
-      const sagaTester = new SagaTester<ReturnType<typeof reducers>>({
+      const sagaTester = new SagaTester({
         reducers,
       });
       sagaTester.start(stateMachineStarterSaga, baseStm, subStm);
@@ -405,7 +406,7 @@ describe('Test on exit on stop stm', () => {
       [subStm.name]: subStm.stateReducer,
     });
 
-    const tester = new SagaTester<ReturnType<typeof reducers>>({
+    const tester = new SagaTester({
       reducers,
     });
 
@@ -437,11 +438,8 @@ describe('Test on exit on stop stm', () => {
       [subStm.name]: subStm.stateReducer,
     });
 
-    const tester = new SagaTester<ReturnType<typeof reducers>>({
+    const tester = new SagaTester({
       reducers,
-      options: {
-        onError: () => {},
-      },
     });
 
     tester.start(stateMachineStarterSaga, baseStm, subStm);

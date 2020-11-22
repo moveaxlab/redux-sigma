@@ -45,14 +45,10 @@ import {
   isStateTransition,
 } from '../utils/typeGuards';
 
-/**
- * STM saga
- */
-
 export abstract class StateMachine<
-  E extends string,
-  S extends string,
-  SM extends string,
+  E extends string = string,
+  S extends string = string,
+  SM extends string = string,
   C = {},
   IS extends S = S,
   N extends SM = SM
@@ -285,11 +281,7 @@ export abstract class StateMachine<
       | StopStateMachineAction<N>
       | StoreStateMachineContext<N, C>
   ): StmStorage<S, C> => {
-    if (
-      !action.payload ||
-      !action.payload.name ||
-      action.payload.name !== this.name
-    ) {
+    if (action.payload?.name !== this.name) {
       return state;
     }
 

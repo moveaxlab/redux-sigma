@@ -1,7 +1,3 @@
-/**
- * Returns true if the parameter is an array. Also helps on type checking.
- * @param elem - The element that may be an array.
- */
 import {
   Activity,
   GuardedTransition,

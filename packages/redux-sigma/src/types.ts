@@ -111,7 +111,10 @@ export type TransitionMap<E extends string, S extends string, C> = Partial<
   { [key in E]: TransitionSpec<S, key, C> }
 >;
 
-export type ReactionPolicy = typeof REACTION_POLICY_FIRST | typeof REACTION_POLICY_LAST | typeof REACTION_POLICY_ALL;
+export type ReactionPolicy =
+  | typeof REACTION_POLICY_FIRST
+  | typeof REACTION_POLICY_LAST
+  | typeof REACTION_POLICY_ALL;
 
 export interface ReactionSpec<E extends string> {
   activity: Activity<E>;

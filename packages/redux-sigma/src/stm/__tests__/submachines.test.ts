@@ -1,7 +1,8 @@
+/* eslint-disable max-classes-per-file */
 import { combineReducers } from 'redux';
-import SagaTester from 'redux-saga-tester';
+import { SagaTester } from '@moveaxlab/redux-saga-tester';
 import { stopStmActionType } from '../../constants';
-import { StateMachine } from '../running';
+import { StateMachine } from '../StateMachine';
 import { stateMachineStarterSaga } from '../startup';
 import { Events, StateMachineNames, States } from './definitions.utils';
 
@@ -143,7 +144,7 @@ describe('Test sub STM behaviour', () => {
       [subStm.name]: subStm.stateReducer,
     });
 
-    const tester = new SagaTester<ReturnType<typeof reducer>>({
+    const tester = new SagaTester({
       reducers: reducer,
     });
 
@@ -180,7 +181,7 @@ describe('Test sub STM behaviour', () => {
       [secondSubStm.name]: secondSubStm.stateReducer,
     });
 
-    const tester = new SagaTester<ReturnType<typeof reducer>>({
+    const tester = new SagaTester({
       reducers: reducer,
     });
 
@@ -219,7 +220,7 @@ describe('Test sub STM behaviour', () => {
       [secondSubStm.name]: secondSubStm.stateReducer,
     });
 
-    const tester = new SagaTester<ReturnType<typeof reducer>>({
+    const tester = new SagaTester({
       reducers: reducer,
     });
 
