@@ -1,4 +1,6 @@
+coverage/
 src/
+tests/
 
 .eslintrc.js
 .gitignore

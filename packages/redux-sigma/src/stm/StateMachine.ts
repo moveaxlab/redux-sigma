@@ -24,7 +24,6 @@ import {
   AnyEvent,
   Event,
   GuardedTransition,
-  ReactionPolicy,
   StartStateMachineAction,
   StateMachineInterface,
   StateMachineSpec,
@@ -32,6 +31,7 @@ import {
   StopStateMachineAction,
   StoreStateMachineContext,
   StoreStateMachineState,
+  TransitionTrigger,
 } from '../types';
 import {
   isArray,
@@ -127,16 +127,19 @@ export abstract class StateMachine<
           action.payload &&
           action.payload.name === this.name
       )) as StartStateMachineAction<N, C>;
+
       const task = (yield fork(
         [this, this.run],
         action.payload.context
       )) as Task;
+
       yield take(
         (action: AnyAction) =>
           action.type === stopStmActionType &&
           action.payload &&
           action.payload.name === this.name
       );
+
       yield cancel(task);
     }
   }
@@ -151,65 +154,55 @@ export abstract class StateMachine<
 
     this.currentState = this.initialState;
 
-    try {
-      while (true) {
-        let nextState: {
-          event?: Event<E>;
-          nextState?: S;
-          command?: Activity<E> | Activity<E>[];
-        } = {};
-        try {
-          const { transitions } = this.spec[this.currentState];
+    while (true) {
+      const nextState = (yield call([
+        this,
+        this.stateLoop,
+      ])) as TransitionTrigger<S, E>;
 
-          const transitionEvents = transitions
-            ? (Object.keys(transitions) as E[])
-            : [];
-
-          this.transitionChannel = (yield actionChannel(
-            transitionEvents
-          )) as Channel<AnyEvent<E>>;
-
-          this.runningTasks.push(
-            (yield fork([this, this.startOnEntryActivities])) as Task
-          );
-
-          this.runningTasks.push(
-            (yield fork([this, this.registerToReactions])) as Task
-          );
-
-          yield* this.startSubMachines();
-
-          nextState = (yield call([this, this.getNextState])) as {
-            event: Event<E>;
-            nextState: S;
-            command?: Activity<E> | Activity<E>[];
-          };
-
-          yield* this.cancelRunningTasks();
-
-          yield* this.stopSubMachines();
-        } finally {
-          yield* this.runOnExitActivities();
-        }
-
-        if (nextState.command) {
-          if (isArray(nextState.command)) {
-            for (const saga of nextState.command) {
-              yield call([this, saga], nextState.event!);
-            }
-          } else {
-            yield call([this, nextState.command], nextState.event!);
+      if (nextState.command) {
+        if (isArray(nextState.command)) {
+          for (const saga of nextState.command) {
+            yield call([this, saga], nextState.event);
           }
+        } else {
+          yield call([this, nextState.command], nextState.event);
         }
-
-        this.currentState = nextState.nextState!;
-
-        yield put(this.storeState(this.currentState));
       }
-    } finally {
-      yield* this.stopSubMachines();
 
+      this.currentState = nextState.nextState;
+
+      yield put(this.storeState(this.currentState));
+    }
+  }
+
+  private *stateLoop(): Generator<StrictEffect, TransitionTrigger<S, E>> {
+    try {
+      const { transitions } = this.spec[this.currentState];
+
+      const transitionEvents = transitions
+        ? (Object.keys(transitions) as E[])
+        : [];
+
+      this.transitionChannel = (yield actionChannel(
+        transitionEvents
+      )) as Channel<AnyEvent<E>>;
+
+      this.runningTasks.push(
+        (yield fork([this, this.startOnEntryActivities])) as Task
+      );
+
+      this.runningTasks.push(
+        (yield fork([this, this.registerToReactions])) as Task
+      );
+
+      yield* this.startSubMachines();
+
+      return (yield call([this, this.getNextState])) as TransitionTrigger<S, E>;
+    } finally {
       yield* this.cancelRunningTasks();
+      yield* this.stopSubMachines();
+      yield* this.runOnExitActivities();
     }
   }
 
@@ -218,10 +211,7 @@ export abstract class StateMachine<
    * transition, and returns it together with the next state and the
    * optional command that must be executed before transitioning.
    */
-  private *getNextState(): Generator<
-    StrictEffect,
-    { event: Event<E>; nextState: S; command?: Activity<E> | Activity<E>[] }
-  > {
+  private *getNextState(): Generator<StrictEffect, TransitionTrigger<S, E>> {
     while (true) {
       const event = (yield take(this.transitionChannel)) as Event<E>;
 
@@ -346,46 +336,45 @@ export abstract class StateMachine<
     const { reactions } = this.spec[this.currentState];
     if (reactions) {
       const eventTypes = Object.keys(reactions) as E[];
-      for (const e of eventTypes) {
-        const r = reactions[e]!;
-        let activity: Activity<E>;
-        let policy: ReactionPolicy;
-        if (isReactionSpec<E>(r)) {
-          activity = r.activity;
-          policy = r.policy;
-        } else {
-          activity = r as Activity<E>;
-          policy = REACTION_POLICY_ALL;
-        }
-        //create a task with the desired policy
+
+      for (const eventType of eventTypes) {
+        const reaction = reactions[eventType]! as Activity<E>;
+
+        const activity = isReactionSpec(reaction)
+          ? reaction.activity
+          : reaction;
+
+        const policy = isReactionSpec(reaction)
+          ? reaction.policy
+          : REACTION_POLICY_ALL;
+
         let task: Task;
-        if (policy === REACTION_POLICY_LAST) {
-          task = (yield fork(
-            {
-              context: this,
-              fn: this.takeLast as (e: E, activity: Activity<E>) => unknown,
-            },
-            e,
-            activity
-          )) as Task;
-        } else if (policy === REACTION_POLICY_FIRST) {
-          task = (yield fork(
-            {
-              context: this,
-              fn: this.takeFirst as (e: E, activity: Activity<E>) => unknown,
-            },
-            e,
-            activity
-          )) as Task;
-        } else {
-          task = (yield fork(
-            {
-              context: this,
-              fn: this.takeAll as (e: E, activity: Activity<E>) => unknown,
-            },
-            e,
-            activity
-          )) as Task;
+
+        switch (policy) {
+          case REACTION_POLICY_LAST: {
+            task = (yield fork(
+              [this, this.takeLast],
+              eventType,
+              activity
+            )) as Task;
+            break;
+          }
+          case REACTION_POLICY_FIRST: {
+            task = (yield fork(
+              [this, this.takeFirst],
+              eventType,
+              activity
+            )) as Task;
+            break;
+          }
+          case REACTION_POLICY_ALL: {
+            task = (yield fork(
+              [this, this.takeAll],
+              eventType,
+              activity
+            )) as Task;
+            break;
+          }
         }
         //enqueue task
         this.runningTasks.push(task);
@@ -400,7 +389,7 @@ export abstract class StateMachine<
    * @param e: the event we are waiting for
    * @param activity: the activity to be executed once the event is received
    */
-  private *takeFirst<E extends string>(
+  private *takeFirst(
     e: E,
     activity: Activity<E>
   ): Generator<StrictEffect, void> {
@@ -417,7 +406,7 @@ export abstract class StateMachine<
    * @param e: the event we are waiting for
    * @param activity the activity to be executed once the event is received
    */
-  private *takeLast<E extends string>(
+  private *takeLast(
     e: E,
     activity: Activity<E>
   ): Generator<StrictEffect, Task> {
@@ -437,10 +426,7 @@ export abstract class StateMachine<
    * @param e: the event we are waiting for
    * @param activity the activity to be executed once the event is received
    */
-  private *takeAll<E extends string>(
-    e: E,
-    activity: Activity<E>
-  ): Generator<StrictEffect, Task> {
+  private *takeAll(e: E, activity: Activity<E>): Generator<StrictEffect, Task> {
     const channel = (yield actionChannel(e)) as Channel<AnyEvent<E>>;
     while (true) {
       const event = (yield take(channel)) as AnyEvent<E>;

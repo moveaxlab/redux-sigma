@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['<rootDir>/.*/__tests__/([^./])*.utils.ts'],
+  testMatch: ['<rootDir>/tests/*.test.ts'],
   setupFilesAfterEnv: ['jest-extended'],
 };

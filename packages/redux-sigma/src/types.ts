@@ -68,6 +68,12 @@ export interface Transition<S extends string, E extends string> {
   command: Activity<E> | Activity<E>[];
 }
 
+export interface TransitionTrigger<S extends string, E extends string> {
+  event: Event<E>;
+  nextState: S;
+  command?: Activity<E> | Activity<E>[];
+}
+
 /**
  * A guarded transition is defined by a target state, and a guard that
  * returns true if the transition should happen. It can optionally have a
