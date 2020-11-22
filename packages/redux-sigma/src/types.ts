@@ -12,10 +12,6 @@ import {
 } from './constants';
 import { StrictEffect } from 'redux-saga/effects';
 
-export type DeepReadonly<T> = {
-  readonly [K in keyof T]: DeepReadonly<T[K]>;
-};
-
 // An event without payload
 export interface Event<T extends string> extends Action<T> {
   type: T;
@@ -59,9 +55,9 @@ export type Activity<K extends string> =
  * current context of the STM.
  */
 export type Guard<K extends string, C> =
-  | ((...args: [Event<K>, DeepReadonly<C>]) => boolean)
-  | ((...args: [PayloadEvent<K>, DeepReadonly<C>]) => boolean)
-  | ((...args: [ErrorEvent<K>, DeepReadonly<C>]) => boolean);
+  | ((...args: [Event<K>, C]) => boolean)
+  | ((...args: [PayloadEvent<K>, C]) => boolean)
+  | ((...args: [ErrorEvent<K>, C]) => boolean);
 
 /**
  * A transition can be defined as a target state and a command to execute
@@ -168,6 +164,15 @@ export interface StateMachineInterface<SM extends string, C> {
 export interface SubStateMachineWithoutContext<SM extends string>
   extends StateMachineInterface<SM, {}> {}
 
+export interface SubStateMachineWithContext<SM extends string, SC = any> {
+  stm: StateMachineInterface<SM, SC>;
+  contextBuilder: (() => SC) | (() => Generator<StrictEffect, SC>);
+}
+
+export type SubStateMachine<SM extends string> =
+  | SubStateMachineWithContext<SM>
+  | SubStateMachineWithoutContext<SM>;
+
 // A state is described by its onEntry and onExit activities, by its sub
 // machines (represented by their names), and by its transitions and reactions.
 export type StateAttributes<
@@ -178,9 +183,7 @@ export type StateAttributes<
 > = Partial<{
   onEntry: VoidActivity | VoidActivity[];
   onExit: VoidActivity | VoidActivity[];
-  subMachines:
-    | SubStateMachineWithoutContext<SM>
-    | SubStateMachineWithoutContext<SM>[];
+  subMachines: SubStateMachine<SM> | SubStateMachine<SM>[];
   transitions: TransitionMap<E, S, C>;
   reactions: ReactionMap<E>;
 }>;

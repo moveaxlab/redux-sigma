@@ -22,7 +22,6 @@ import {
 import {
   Activity,
   AnyEvent,
-  DeepReadonly,
   Event,
   GuardedTransition,
   ReactionPolicy,
@@ -68,11 +67,12 @@ export abstract class StateMachine<
   private transitionChannel!: Channel<AnyEvent<E>>;
 
   start = (context: C): StartStateMachineAction<N, C> => {
+    const initialContext = produce(null, () => context) as C;
     return {
       type: startStmActionType,
       payload: {
         name: this.name,
-        context,
+        context: initialContext,
       },
     };
   };
@@ -110,12 +110,12 @@ export abstract class StateMachine<
     if (isFunction(newContext)) {
       this._context = produce(this._context, newContext);
     } else {
-      this._context = newContext;
+      this._context = produce(null, () => newContext) as C;
     }
     yield putResolve(this.storeContext(this._context));
   }
 
-  get context(): DeepReadonly<C> {
+  get context(): C {
     return this._context;
   }
 
@@ -177,7 +177,7 @@ export abstract class StateMachine<
             (yield fork([this, this.registerToReactions])) as Task
           );
 
-          yield call([this, this.startSubMachines]);
+          yield* this.startSubMachines();
 
           nextState = (yield call([this, this.getNextState])) as {
             event: Event<E>;
@@ -185,11 +185,11 @@ export abstract class StateMachine<
             command?: Activity<E> | Activity<E>[];
           };
 
-          yield call([this, this.cancelRunningTasks]);
+          yield* this.cancelRunningTasks();
 
-          yield call([this, this.stopSubMachines]);
+          yield* this.stopSubMachines();
         } finally {
-          yield call([this, this.runOnExitActivities]);
+          yield* this.runOnExitActivities();
         }
 
         if (nextState.command) {
@@ -207,9 +207,9 @@ export abstract class StateMachine<
         yield put(this.storeState(this.currentState));
       }
     } finally {
-      yield call([this, this.stopSubMachines]);
+      yield* this.stopSubMachines();
 
-      this.cancelRunningTasks();
+      yield* this.cancelRunningTasks();
     }
   }
 
@@ -470,7 +470,12 @@ export abstract class StateMachine<
     }
 
     for (const subMachine of subMachines) {
-      yield put(subMachine.start({}));
+      if ('stm' in subMachine) {
+        const ctx = yield call([this, subMachine.contextBuilder]);
+        yield put(subMachine.stm.start(ctx));
+      } else {
+        yield put(subMachine.start({}));
+      }
     }
   }
 
@@ -487,7 +492,11 @@ export abstract class StateMachine<
     }
 
     for (const subMachine of subMachines) {
-      yield put(subMachine.stop());
+      if ('stm' in subMachine) {
+        yield put(subMachine.stm.stop());
+      } else {
+        yield put(subMachine.stop());
+      }
     }
   }
 
