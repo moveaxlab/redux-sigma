@@ -225,7 +225,7 @@ describe('Context semantics', () => {
 
     tester.dispatch(event);
 
-    expect(guardSpy).toHaveBeenCalledWith(event, { counter: 0 });
+    expect(guardSpy).toHaveBeenLastCalledWith(event, { counter: 0 });
 
     const updateEvent: OverwriteContextEvent = {
       type: Events.overwriteContext,
@@ -239,7 +239,7 @@ describe('Context semantics', () => {
 
     tester.dispatch(event);
 
-    expect(guardSpy).toHaveBeenCalledWith(event, {
+    expect(guardSpy).toHaveBeenLastCalledWith(event, {
       counter: 3,
       message: 'message 1',
     });
