@@ -72,6 +72,10 @@ class MyStateMachine extends StateMachine {
 }
 ```
 
+This state machine can be represented graphically as follows:
+
+![A simple state machine](assets/simple-state-machine.png)
+
 The `spec` field is the actual _specification_ of the state machine:
 an high level description of what its states are, and how the state machines
 goes from one state to another.
@@ -311,7 +315,7 @@ class MyStateMachine extends StateMachine {
 
 Simple transitions can be illustrated as follows:
 
-![Simple transition](assets/simple-transition.png)
+![A state machine with a simple transition](assets/simple-transition.png)
 
 The transition from `state_1` to `state_2` will be triggered by any `redux` action
 having a `type` equal to `'event_1'`:
@@ -353,7 +357,7 @@ class MyStateMachine extends StateMachine {
 
 Transitions paired with commands can be represented in this way:
 
-![Simple transition](assets/transition-with-command.png)
+![A state machine with a command on a transition](assets/transition-with-command.png)
 
 The `target` in the `event_2` transition identifies the state that your state machine will reach
 after executing the `command`.
@@ -404,7 +408,7 @@ class MyStateMachine extends StateMachine {
 
 Guarded transitions are represented with the guard condition between square brackets:
 
-![Simple transition](assets/guarded-transitions.png)
+![A state machine with guarded transitions](assets/guarded-transitions.png)
 
 For `event_1`, the transition will be triggered only if the `guard` function returns `true`,
 otherwise nothing will happen.
@@ -448,6 +452,10 @@ class MyStateMachine {
   }
 }
 ```
+
+Reactions are shown inside the state, separated from the name:
+
+![A state with a reaction](assets/reactions.png)
 
 By default, while the state machine is in `state_1`, each action of type `event_1`
 dispatched to the `redux` store will trigger the reaction.
@@ -501,12 +509,16 @@ If your state has only one `onEntry` or one `onExit`, you can use this short-han
 class MyStateMachine extends StateMachine {
   spec = {
     state_1: {
-      onEntry: this.onEntry,
-      onExit: this.onExit,
+      onEntry: this.entryActivity,
+      onExit: this.exitActivity,
     },
   };
 }
 ```
+
+`onEntry` and `onExit` activities are represented just like other reactions:
+
+![A state with onEntry and onExit activities](./assets/onentry-onexit.png)
 
 The `onEntry` activities will start running as soon as your state machine enters the state.
 While `onEntry` activities are running, the state machine can change state if it receives
