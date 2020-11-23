@@ -1,14 +1,9 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["dom", "es2016"],
-    "target": "es2016",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "declaration": true,
-    "noImplicitAny": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "esModuleInterop": true,
-    "strict": true
-  }
+    "noEmit": true
+  },
+  "exclude": [
+    "packages/redux-sigma/node_modules"
+  ]
 }

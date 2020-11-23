@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
@@ -8,7 +8,7 @@
     "declarationDir": "./types"
   },
   "exclude": [
-    "node_modules",
+    "packages/redux-sigma/node_modules",
     "example",
     "lib",
     "src/**/__tests__",
