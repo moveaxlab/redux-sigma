@@ -1,6 +1,7 @@
 .idea/
 assets/
 coverage/
+example/
 src/
 tests/
 

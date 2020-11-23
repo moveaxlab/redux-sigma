@@ -1,6 +1,6 @@
 <h1>redux sigma <img src="assets/logo.png" alt="redux-sigma" height="30px" /></h1>
 
-![npm](https://img.shields.io/npm/v/redux-sigma)
+[![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
 
 `redux-sigma` is a library that allows implementation of state machines on top
 of `redux` and `redux-saga`.
@@ -22,13 +22,8 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
 $ yarn add redux-sigma
 ```
 
-or
-
-```bash
-$ npm install redux-sigma
-```
-
 `redux-sigma` has `redux` and `redux-saga` as peer dependencies.
+Remember to include them in your project.
 
 ## Basic usage
 
@@ -131,6 +126,8 @@ console.log(store.getState().my_state_machine);
 Once the state machine starts running, its state will look like this:
 
 ```typescript
+store.dispatch(myStateMachine.start({}));
+
 console.log(store.getState().my_state_machine);
 // { state: 'first_state', context: {} }
 ```
@@ -138,85 +135,7 @@ console.log(store.getState().my_state_machine);
 The state and the context of the state machines will be updated independently
 during the state machine lifetime, according to its specification.
 
-## Using generics
-
-The `StateMachine` class is generic, and the recommended usage is to rely on those generics.
-
-The generics allow you to restrict the possible values of:
-
-- the events that the state machine reacts to
-- the states that the state machine can be in
-- the names of all your state machines (to avoid conflicts)
-- the context (or extended state) of the state machine
-
-Generics are specified in this order:
-
-```typescript
-class MyStateMachine extends StateMachine<Events, States, StateMachineNames, Context> {
-  /* ... */
-}
-```
-
-The `Events`, `States`, and `StateMachineNames` generics must all be string-like.
-The `Context` must be an object.
-
-- The `Events` generic restricts what action types can be used as keys
-in the `transitions` and `reactions` section of the specification.
-- The `States` generic determines what states must be used as keys in the specification.
-- The `StateMachineNames` generic restricts what value can be assigned to the `name` of the state machine.
-- For more details on `Context`, see [later](#context-or-extended-state).
-
-By default, the state machine can have any string as `Events`, `States`, and `StateMachineNames`.
-The `Context` defaults to an empty object.
-
-Our preferred approach is to use TypeScript `enum`s to define `Events`, `States`, and `StateMachineNames`:
-
-```typescript
-enum Events {
-  event_1 = 'first event',
-  event_2 = 'second event',
-}
-
-enum States {
-  state_1 = 'first state',
-  state_2 = 'second state',
-}
-
-enum StateMachineNames {
-  my_state_machine = 'my state machine',
-}
-```
-
-You can use a single `Events` enum for all your state machines,
-or divide your events in multiple enums, possibly combining them in a single state machine.
-
-Each state machine should have its own `States` enum.
-It's still possible to reuse a single `States` enum across multiple state machines.
-
-There should be a single `StateMachineNames` enum in your application.
-
-When relying on generics and on TypeScript, your state machines will look like this:
-
-```typescript
-class MyStateMachine extends StateMachine<Events, States, StateMachineNames> {
-  protected readonly initialState = States.state_1;
-
-  readonly name = StateMachineNames.my_state_machine;
-
-  protected readonly spec = {
-    [States.state_1]: {
-      transitions: {
-        [Events.event_1]: States.state_2,
-      },
-    },
-    [States.state_2]: {
-      transitions: {
-        [Events.event_2]: States.state_1,
-      },
-    },
-  };
-}
-```
+You can find a more detailed example in the [`example`](./example) folder.
 
 ## Activities
 
@@ -231,6 +150,8 @@ In the majority of cases, you will need only the following `redux-saga` effects:
 - `select`, to read data from the `redux` store
 - `put`, to send events to other state machines or actions to `redux` reducers
 - `delay`, to delay the execution of successive actions
+
+Take a look at the examples in the [`example`](./example) folder to see how activities could be implemented.
 
 ## `context` or extended state
 
@@ -625,6 +546,86 @@ class MyStateMachine extends StateMachine {
     return {
       counter: 5,
     };
+  };
+}
+```
+
+## Going full TypeScript
+
+The `StateMachine` class is generic, and the recommended usage is to rely on those generics.
+
+The generics allow you to restrict the possible values of:
+
+- the events that the state machine reacts to
+- the states that the state machine can be in
+- the names of all your state machines (to avoid conflicts)
+- the context (or extended state) of the state machine
+
+Generics are specified in this order:
+
+```typescript
+class MyStateMachine extends StateMachine<Events, States, StateMachineNames, Context> {
+  /* ... */
+}
+```
+
+The `Events`, `States`, and `StateMachineNames` generics must all be string-like.
+The `Context` must be an object.
+
+- The `Events` generic restricts what action types can be used as keys
+in the `transitions` and `reactions` section of the specification.
+- The `States` generic determines what states must be used as keys in the specification.
+- The `StateMachineNames` generic restricts what value can be assigned to the `name` of the state machine.
+- For more details on `Context`, see [later](#context-or-extended-state).
+
+By default, the state machine can have any string as `Events`, `States`, and `StateMachineNames`.
+The `Context` defaults to an empty object.
+
+Our preferred approach is to use TypeScript `enum`s to define `Events`, `States`, and `StateMachineNames`:
+
+```typescript
+enum Events {
+  event_1 = 'first event',
+  event_2 = 'second event',
+}
+
+enum States {
+  state_1 = 'first state',
+  state_2 = 'second state',
+}
+
+enum StateMachineNames {
+  my_state_machine = 'my state machine',
+}
+```
+
+You can use a single `Events` enum for all your state machines,
+or divide your events in multiple enums, possibly combining them in a single state machine.
+
+Each state machine should have its own `States` enum.
+It's still possible to reuse a single `States` enum across multiple state machines.
+
+There should be a single `StateMachineNames` enum in your application.
+
+When relying on generics and on TypeScript, your state machines will look like this:
+
+```typescript
+class MyStateMachine extends StateMachine<Events, States, StateMachineNames> {
+  protected readonly initialState = States.state_1;
+
+  readonly name = StateMachineNames.my_state_machine;
+
+  protected readonly spec = {
+    [States.state_1]: {
+      transitions: {
+        [Events.event_1]: States.state_2,
+      },
+    },
+    [States.state_2]: {
+      transitions: {
+        [Events.event_2]: States.state_1,
+      },
+    },
   };
 }
 ```
