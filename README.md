@@ -1,7 +1,7 @@
 <h1>redux sigma <img src="assets/logo.png" alt="redux-sigma" height="30px" /></h1>
 
 [![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
-[![Build Status](https://travis-ci.com/moveaxlab/redux-sigma.svg?token=dgq4eSKXA1UFmCdRUcqN&branch=master)](https://travis-ci.com/moveaxlab/redux-sigma)
+[![Test CI](https://github.com/moveaxlab/redux-sigma/workflows/Test%20CI/badge.svg?branch=master)](https://github.com/moveaxlab/redux-sigma/actions)
 
 `redux-sigma` is a library that allows implementation of state machines on top
 of `redux` and `redux-saga`.
@@ -547,9 +547,9 @@ inside a state.
 
 ### Sub state machines
 
-In state machine, each state represents a configuration of your application in which an invariant is holding.
+Each state of a state machine represents a configuration of your application in which an invariant is holding.
 Sometimes a single state can be subdivided into additional states, or configurations.
-To accomplish this we rely on _sub state machines_.
+To accomplish this in `redux-sigma` we rely on _sub state machines_.
 
 ```typescript
 import { mySubStateMachine } from './my-sub-state-machine';
@@ -672,6 +672,10 @@ class MyStateMachine extends StateMachine<Events, States, StateMachineNames> {
   };
 }
 ```
+
+When using generics, TypeScript will enforce that all the states have a definition
+inside the state machine `spec`, and that all events that are used in `reactions`
+or `transitions` appear in your events definition.
 
 ---
 
