@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Run tests on node ${{ matrix.node_version }}
+    name: Run tests on node ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,4 +25,6 @@ jobs:
         yarn
         yarn test:types
         yarn test:lint
-        yarn test:unit --coverage --coverageReporters=text-lcov | yarn run coveralls
+        yarn test:unit --coverage --coverageReporters=text-lcov
+    - name: update coverage data to coveralls
+      uses: coverallsapp/github-action@v1.1.2
