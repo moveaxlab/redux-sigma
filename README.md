@@ -28,7 +28,7 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
   * [`transitions`](#transitions)
     + [Running activities on transition](#running-activities-on-transition)
     + [Conditional transitions: `guard`s](#conditional-transitions-guards)
-  * [`reactions` or internal transitions](#-reactions--or-internal-transitions)
+  * [`reactions` or internal transitions](#reactions-or-internal-transitions)
   * [`onEntry` and `onExit` activities](#onentry-and-onexit-activities)
   * [Sub state machines](#sub-state-machines)
 - [Going full TypeScript](#going-full-typescript)
