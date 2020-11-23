@@ -25,7 +25,7 @@ jobs:
     - name: Check TypeScript definitions
       run: yarn test:types
     - name: Check linting
-      run: test:lint
+      run: yarn test:lint
     - name: Run unit tests with coverage
       run: yarn test:unit --coverage --coverageReporters=text-lcov
     - name: Upload coverage data to coveralls
