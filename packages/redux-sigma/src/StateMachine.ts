@@ -18,12 +18,11 @@ import {
   stopStmActionType,
   storeStmContextActionType,
   storeStmStateActionType,
-} from '../constants';
+} from './constants';
 import {
   Activity,
   AnyEvent,
   Event,
-  GuardedTransition,
   StartStateMachineAction,
   StateMachineInterface,
   StateMachineSpec,
@@ -31,18 +30,18 @@ import {
   StopStateMachineAction,
   StoreStateMachineContext,
   StoreStateMachineState,
+  TransitionSpec,
   TransitionTrigger,
-} from '../types';
+} from './types';
 import {
   isArray,
   isFunction,
   isGuardedTransition,
-  isGuardedTransitionArray,
   isReactionSpec,
   isSimpleTransition,
   isStarted,
   isStateTransition,
-} from '../utils/typeGuards';
+} from './typeGuards';
 
 export abstract class StateMachine<
   E extends string = string,
@@ -217,20 +216,20 @@ export abstract class StateMachine<
 
       const transitionSpec = this.spec[this.currentState].transitions![
         event.type
-      ]!;
+      ]! as TransitionSpec<S, E, C>;
 
-      if (isStateTransition<S, E, C>(transitionSpec)) {
+      if (isStateTransition(transitionSpec)) {
         return {
           event,
           nextState: transitionSpec,
         };
-      } else if (isSimpleTransition<S, E, C>(transitionSpec)) {
+      } else if (isSimpleTransition(transitionSpec)) {
         return {
           event,
           nextState: transitionSpec.target,
           command: transitionSpec.command,
         };
-      } else if (isGuardedTransition<S, E, C>(transitionSpec)) {
+      } else if (isGuardedTransition(transitionSpec)) {
         if (yield call(transitionSpec.guard, event, this.context)) {
           return {
             event,
@@ -238,12 +237,8 @@ export abstract class StateMachine<
             command: transitionSpec.command,
           };
         }
-      } else if (isGuardedTransitionArray<S, E, C>(transitionSpec)) {
-        for (const transitionOption of transitionSpec as GuardedTransition<
-          S,
-          E,
-          C
-        >[]) {
+      } else {
+        for (const transitionOption of transitionSpec) {
           if (yield call(transitionOption.guard, event, this.context))
             return {
               event,

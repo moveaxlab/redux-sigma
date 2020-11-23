@@ -1,4 +1,4 @@
-import { not } from '../guards';
+import { not } from '../src';
 
 function someCondition(a: number, b: number) {
   return a > b;

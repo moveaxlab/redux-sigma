@@ -1,21 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { fork, takeEvery } from 'redux-saga/effects';
+import { call, fork, takeEvery } from 'redux-saga/effects';
 import {
   startStmActionType,
   stopStmActionType,
   storeStmContextActionType,
   storeStmStateActionType,
-} from '../../constants';
-import { StateMachineInterface } from '../../types';
-import { reportUnknownStateMachine } from './report';
+} from './constants';
+import { StateMachineInterface } from './types';
 import { AnyAction } from 'redux';
 
-export class DuplicateStateMachineError extends Error {
-  constructor(stmName: string) {
-    super(`Duplicate STM detected with name ${stmName}`);
-    this.constructor = DuplicateStateMachineError;
-    Object.setPrototypeOf(this, DuplicateStateMachineError.prototype);
-  }
+/* istanbul ignore next */
+/**
+ * Prints a warning when an unknown STM is started or stopped.
+ * @param action - The start/stop action that was dispatched.
+ */
+function* reportUnknownStateMachine(action: AnyAction) {
+  // eslint-disable-next-line no-console
+  yield call(console.warn, `Unkwnown state machine ${action.payload.name}`);
 }
 
 /**
@@ -27,15 +28,20 @@ export class DuplicateStateMachineError extends Error {
 export function* stateMachineStarterSaga(
   ...stms: StateMachineInterface<any, any>[]
 ) {
-  const dupeStm = stms
+  const duplicateStm = stms
     .map(stm => stm.name)
     .find((name, idx, arr) => arr.lastIndexOf(name) !== idx);
-  if (dupeStm) {
-    throw new DuplicateStateMachineError(dupeStm);
+
+  /* istanbul ignore next */
+  if (duplicateStm) {
+    throw new Error(`Duplicate STM detected with name ${duplicateStm}`);
   }
+
   for (const stm of stms) {
     yield fork([stm, stm.starterSaga]);
   }
+
+  /* istanbul ignore next */
   if (process.env.NODE_ENV !== 'production') {
     const stmNames = stms.map(stm => stm.name);
     yield takeEvery(

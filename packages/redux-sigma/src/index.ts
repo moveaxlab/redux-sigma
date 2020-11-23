@@ -1,9 +1,9 @@
-import { StateMachine } from './stm/StateMachine';
-import { stateMachineStarterSaga } from './stm/startup';
+import { StateMachine } from './StateMachine';
 import { StateMachineSpec, StateMachineInterface } from './types';
-import { not } from './utils/guards';
-import { all, first, last } from './utils/policies';
-import { bindStm } from './utils/subStmStarter';
+import { not } from './guards';
+import { all, first, last } from './policies';
+import { bindStm } from './subStmStarter';
+import { stateMachineStarterSaga } from './starter';
 
 export {
   StateMachine,

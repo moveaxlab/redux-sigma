@@ -1,5 +1,5 @@
 import { StrictEffect } from 'redux-saga/effects';
-import { StateMachineInterface, SubStateMachineWithContext } from '../types';
+import { StateMachineInterface, SubStateMachineWithContext } from './types';
 
 /**
  * Helper function to bind a sub STM to a context builder function.

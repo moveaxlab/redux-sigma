@@ -6,7 +6,7 @@ import {
   StmStorage,
   Transition,
   TransitionSpec,
-} from '../types';
+} from './types';
 
 export function isArray<T>(elem: T | T[]): elem is T[] {
   return (elem as T[]) instanceof Array;
@@ -26,7 +26,7 @@ export function isGuardedTransition<S extends string, E extends string, C>(
 
 export function isGuardedTransitionArray<S extends string, E extends string, C>(
   value: TransitionSpec<S, E, C>
-): value is GuardedTransition<S, E, C>[] {
+): value is Array<GuardedTransition<S, E, C>> {
   return value instanceof Array;
 }
 
