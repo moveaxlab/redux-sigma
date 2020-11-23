@@ -1,6 +1,7 @@
 <h1>redux sigma <img src="assets/logo.png" alt="redux-sigma" height="30px" /></h1>
 
 [![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
+[![Build Status](https://travis-ci.com/moveaxlab/redux-sigma.svg?token=dgq4eSKXA1UFmCdRUcqN&branch=master)](https://travis-ci.com/moveaxlab/redux-sigma)
 
 `redux-sigma` is a library that allows implementation of state machines on top
 of `redux` and `redux-saga`.
