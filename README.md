@@ -16,6 +16,20 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
 
 `redux-sigma` has extensive TypeScript support, and we recommend using it with TypeScript.
 
+- [Installation](#installation)
+- [Basic usage](#basic-usage)
+- [Activities](#activities)
+- [`context` or extended state](#-context--or-extended-state)
+  * [Initial context](#initial-context)
+- [State machines specification](#state-machines-specification)
+  * [`transitions`](#-transitions-)
+    + [Running activities on transition](#running-activities-on-transition)
+    + [Conditional transitions: `guard`s](#conditional-transitions---guard-s)
+  * [`reactions` or internal transitions](#-reactions--or-internal-transitions)
+  * [`onEntry` and `onExit` activities](#-onentry--and--onexit--activities)
+  * [Sub state machines](#sub-state-machines)
+- [Going full TypeScript](#going-full-typescript)
+
 ## Installation
 
 ```bash
