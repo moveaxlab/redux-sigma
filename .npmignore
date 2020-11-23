@@ -8,6 +8,8 @@ tests/
 .eslintrc.js
 .gitignore
 .travis.yml
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
 global.d.ts
 jest.config.js
 rollup.config.js

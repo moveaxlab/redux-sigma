@@ -22,14 +22,14 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
 - [Activities](#activities)
-- [`context` or extended state](#context-or-extended-state)
+- [Context or extended state](#context-or-extended-state)
   * [Initial context](#initial-context)
 - [State machines specification](#state-machines-specification)
-  * [`transitions`](#transitions)
+  * [Transitions](#transitions)
     + [Running activities on transition](#running-activities-on-transition)
-    + [Conditional transitions: `guard`s](#conditional-transitions-guards)
-  * [`reactions` or internal transitions](#reactions-or-internal-transitions)
-  * [`onEntry` and `onExit` activities](#onentry-and-onexit-activities)
+    + [Conditional transitions: guards](#conditional-transitions-guards)
+  * [Reactions or internal transitions](#reactions-or-internal-transitions)
+  * [onEntry and onExit activities](#onentry-and-onexit-activities)
   * [Sub state machines](#sub-state-machines)
 - [Going full TypeScript](#going-full-typescript)
 
@@ -170,7 +170,7 @@ In the majority of cases, you will need only the following `redux-saga` effects:
 
 Take a look at the examples in the [`example`](./example) folder to see how activities could be implemented.
 
-## `context` or extended state
+## Context or extended state
 
 Relying only on the states to implement your flows cannot be enough for complex flows.
 State machines allow you to define an _extended state_, or _context_ of your state machine,
@@ -288,7 +288,7 @@ class MyStateMachine extends StateMachine {
 
 All fields are optional, and are described in the detail in the following sections.
 
-### `transitions`
+### Transitions
 
 Transitions are the core of all state machines: they define how the state of the state machine
 evolves in response to events that happen in your application.
@@ -363,7 +363,7 @@ They receive in input the event that triggered the transition.
 There is no guarantee on the order in which commands are executed when performing the transition,
 but all commands will execute to completion before entering the `target` state.
 
-#### Conditional transitions: `guard`s
+#### Conditional transitions: guards
 
 For more advanced use-cases, you may want to perform a transition when receiving an event
 but _only_ if some conditions are met.
@@ -422,11 +422,13 @@ All `guard`s receive in input the event that could trigger the transition,
 and the current `context` of the state machine.
 You can learn more about the context in its [section](#context-or-extended-state).
 
-### `reactions` or internal transitions
+### Reactions or internal transitions
 
 Sometimes you want your state machine to perform some action in response to an event
 _without_ changing the state.
 In `redux-sigma` this is possible via _reactions_ or internal transitions.
+When a reaction is triggered the state machine does not exit the current state:
+reactions do not trigger execution of `onEntry` or `onExit` activities.
 
 The `reactions` are defined as a map between event types and functions or generators (saga).
 Reaction activities will receive in input the event that triggered the transition.
@@ -487,7 +489,7 @@ class MyStateMachine extends StateMachine {
 }
 ```
 
-### `onEntry` and `onExit` activities
+### onEntry and onExit activities
 
 The `onEntry` and `onExit` fields are an array that mixes functions and generators (sagas).
 They receive nothing in input and must not return anything.

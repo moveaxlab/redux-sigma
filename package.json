@@ -3,10 +3,10 @@
   "version": "0.7.0-beta.2",
   "description": "A state machine library for redux and redux-saga.",
   "contributors": [
-    "Michelle Laurenti <michelle.laurenti@moveax.it>",
     "Fabrizio Cavaniglia <fabrizio.cavaniglia@moveax.it>",
     "Furio Dipoppa <furio.dipoppa@moveax.it>",
-    "Gabrio Tognozzi <gabrio.tognozzi@moveax.it>"
+    "Gabrio Tognozzi <gabrio.tognozzi@moveax.it>",
+    "Michelle Laurenti <michelle.laurenti@moveax.it>"
   ],
   "homepage": "https://github.com/moveaxlab/redux-sigma",
   "license": "MIT",
@@ -23,7 +23,7 @@
   "scripts": {
     "prepublish": "yarn build",
     "build": "npm-run-all build:*",
-    "build:clean": "rimraf lib types/",
+    "build:clean": "rimraf lib types",
     "build:code": "rollup -c",
     "test": "npm-run-all test:*",
     "test:types": "tsc -p tsconfig.json",

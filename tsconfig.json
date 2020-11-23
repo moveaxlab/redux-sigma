@@ -4,6 +4,6 @@
     "noEmit": true
   },
   "exclude": [
-    "packages/redux-sigma/node_modules"
+    "node_modules"
   ]
 }

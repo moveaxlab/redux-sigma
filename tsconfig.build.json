@@ -8,10 +8,9 @@
     "declarationDir": "./types"
   },
   "exclude": [
-    "packages/redux-sigma/node_modules",
+    "node_modules",
     "example",
     "lib",
-    "src/**/__tests__",
-    "src/**/*.test.ts"
+    "tests"
   ]
 }

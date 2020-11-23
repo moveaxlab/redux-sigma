@@ -9,7 +9,7 @@ The example implements this state machine:
 
 There are two implementations in this folder:
 
-- a "light" TypeScript implementation, that does not relay too heavily on generics
+- a "light" TypeScript implementation, that does not rely too heavily on generics
 - a full TypeScript implementation, that adds a lot of types annotation
 
 The example shows the following features of `redux-sigma`:
