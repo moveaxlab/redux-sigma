@@ -1,5 +1,7 @@
 # redux-sigma
 
+![npm](https://img.shields.io/npm/v/redux-sigma)
+
 `redux-sigma` is a library that allows implementation of state machines on top
 of `redux` and `redux-saga`.
 
@@ -20,9 +22,13 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
 $ yarn add redux-sigma
 ```
 
+or
+
 ```bash
 $ npm install redux-sigma
 ```
+
+`redux-sigma` has `redux` and `redux-saga` as peer dependencies.
 
 ## Basic usage
 
