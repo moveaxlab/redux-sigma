@@ -20,11 +20,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: run tests
-      run: |
-        yarn
-        yarn test:types
-        yarn test:lint
-        yarn test:unit --coverage --coverageReporters=text-lcov
-    - name: update coverage data to coveralls
+    - name: Install dependencies
+      run: yarn
+    - name: Check TypeScript definitions
+      run: yarn test:types
+    - name: Check linting
+      run: test:lint
+    - name: Run unit tests with coverage
+      run: yarn test:unit --coverage --coverageReporters=text-lcov
+    - name: Upload coverage data to coveralls
       uses: coverallsapp/github-action@v1.1.2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
