@@ -27,7 +27,7 @@ jobs:
     - name: Check linting
       run: yarn test:lint
     - name: Run unit tests with coverage
-      run: yarn test:unit --coverage --coverageReporters=text-lcov
+      run: yarn test:unit
     - name: Upload coverage data to coveralls
       uses: coverallsapp/github-action@v1.1.2
       with:
