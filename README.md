@@ -457,6 +457,10 @@ Reactions are shown inside the state, separated from the name:
 
 ![A state with a reaction](assets/reactions.png)
 
+If your state machine receives an event that triggers a transition while a reaction is running,
+`redux-sigma` will stop that reaction using the [`cancel`](https://redux-saga.js.org/docs/api/#canceltask)
+effect from `redux-saga`.
+
 By default, while the state machine is in `state_1`, each action of type `event_1`
 dispatched to the `redux` store will trigger the reaction.
 If several events that trigger a reaction are dispatched one after another,
@@ -607,7 +611,7 @@ The `Context` must be an object.
 in the `transitions` and `reactions` section of the specification.
 - The `States` generic determines what states must be used as keys in the specification.
 - The `StateMachineNames` generic restricts what value can be assigned to the `name` of the state machine.
-- For more details on `Context`, see [later](#context-or-extended-state).
+- For more details on `Context`, see the [context section](#context-or-extended-state).
 
 By default, the state machine can have any string as `Events`, `States`, and `StateMachineNames`.
 The `Context` defaults to an empty object.
