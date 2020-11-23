@@ -16,6 +16,8 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
 
 `redux-sigma` has extensive TypeScript support, and we recommend using it with TypeScript.
 
+### Table of Contents
+
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
 - [Activities](#activities)
