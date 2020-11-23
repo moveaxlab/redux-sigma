@@ -112,6 +112,10 @@ const store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
 sagaMiddleware.run(stateMachineStarterSaga, myStateMachine);
 ```
 
+> Having more than one state machine with the same name
+> or two instances of the same state machine passed to `stateMachineStarterSaga`
+> will crash `redux-sigma`!
+
 State machines can be started and stopped by dispatching actions to `redux`:
 
 ```typescript
@@ -176,7 +180,7 @@ Take a look at the examples in the [`example`](./example) folder to see how acti
 
 ## Context or extended state
 
-Relying only on the states to implement your flows cannot be enough for complex flows.
+Relying only on the states to implement your flows cannot be enough when they are complex.
 State machines allow you to define an _extended state_, or _context_ of your state machine,
 that can hold additional information for each state.
 
@@ -209,6 +213,10 @@ in combination with the `setContext` method.
 
 The `setContext` method allows you to override the whole context with a new value,
 or to use an [`immer`-style callback](https://immerjs.github.io/immer/docs/produce) to mutate the context.
+
+> `redux-sigma` uses `immer` under the hood to update its context!
+> The context is thus [freezed](https://immerjs.github.io/immer/docs/freezing) for you by `immer`,
+> to avoid accidental mutations.
 
 The context is immutable: you must always use the `setContext` method to update it.
 Updating the context via `setContext` updates its value stored inside `redux`.
