@@ -7,6 +7,7 @@ tests/
 
 .eslintrc.js
 .gitignore
+.travis.yml
 global.d.ts
 jest.config.js
 rollup.config.js
