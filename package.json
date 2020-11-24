@@ -21,7 +21,7 @@
     "url": "git+https://github.com/moveaxlab/redux-sigma.git"
   },
   "scripts": {
-    "prepublish": "yarn build",
+    "prepack": "yarn build",
     "build": "npm-run-all build:*",
     "build:clean": "rimraf lib types",
     "build:code": "rollup -c",
@@ -40,7 +40,7 @@
     "@types/node": "^12.12.6",
     "coveralls": "^3.1.0",
     "eslint": "^6.8.0",
-    "husky": "^2.4.1",
+    "husky": "^4.3.0",
     "jest": "^26.6.3",
     "jest-extended": "^0.11.5",
     "npm-run-all": "^4.1.5",

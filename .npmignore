@@ -10,6 +10,7 @@ tests/
 .eslintignore
 .eslintrc.js
 .gitignore
+.huskyrc.json
 .travis.yml
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
