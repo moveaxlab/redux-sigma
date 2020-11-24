@@ -1,7 +1,5 @@
 <h1>redux sigma <img src="https://github.com/moveaxlab/redux-sigma/blob/master/assets/logo.png?raw=true" alt="redux-sigma" height="30px" /></h1>
 
-<p>developed with :heart: by <a href="https://moveax.it" target="_blank"><img alt="moveax" height="16px" src="https://github.com/moveaxlab/redux-sigma/blob/master/assets/moveax.png?raw=true"></a></p>
-
 <a href="https://moveax.it"><img alt="moveax" height="17px" src="https://github.com/moveaxlab/redux-sigma/raw/master/assets/by-moveax.png?raw=true" /></a>
 
 [![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
