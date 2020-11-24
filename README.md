@@ -30,9 +30,9 @@ check out the [example](https://github.com/moveaxlab/redux-sigma/tree/master/exa
 ```bash
 $ yarn add redux-sigma
 ```
+Assuming you are using `yarn`.
 
 `redux-sigma` has `redux` and `redux-saga` as peer dependencies.
-Remember to include them in your project.
 
 ## Quick Start
 
@@ -69,9 +69,9 @@ This state machine can be represented graphically as follows:
 ![A simple state machine](https://github.com/moveaxlab/redux-sigma/raw/master/assets/simple-state-machine.png?raw=true)
 
 The `spec` field is the actual _specification_ of the state machine:
-an high level description of what its states are, and how the state machines
+a high level description of what its states are, and how the state machine
 goes from one state to another.
-More on this [later](#state-machines-specification).
+More on this [in the docs](https://github.com/moveaxlab/redux-sigma/tree/master/docs).
 
 The `initialState` field indicates what will be the state of the state machine
 when it first starts.
@@ -153,6 +153,5 @@ console.log(store.getState().my_state_machine);
 // { state: 'first_state', context: {} }
 ```
 
-The state and the context of the state machines will be updated independently
+The state and context of the state machines will be updated independently
 during the state machine lifetime, according to its specification.
-
