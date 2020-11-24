@@ -1,10 +1,12 @@
 <h1>redux sigma <img src="https://github.com/moveaxlab/redux-sigma/blob/master/assets/logo.png?raw=true" alt="redux-sigma" height="30px" /></h1>
 
+developed with :heart: by [**moveax**](https://moveax.it/)
+
 [![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
 [![Test CI](https://github.com/moveaxlab/redux-sigma/workflows/Test%20CI/badge.svg?branch=master)](https://github.com/moveaxlab/redux-sigma/actions)
 
 `redux-sigma` is a library that allows implementation of state machines on top
-of `redux` and `redux-saga` developed with :heart: by [**moveax_**](https://moveax.it/).
+of `redux` and `redux-saga`.
 
 State machines implemented with `redux-sigma` react to events dispatched via `redux`,
 and their state can be stored inside `redux` using a dedicated reducer.
