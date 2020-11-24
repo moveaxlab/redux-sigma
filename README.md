@@ -1,4 +1,4 @@
-<h1>redux sigma <img src="https://github.com/moveaxlab/redux-sigma/blob/master/.github/images/logo.png?raw=true" alt="redux-sigma" height="30px" /></h1>
+<h1>redux sigma <img src="https://github.com/moveaxlab/redux-sigma/blob/master/assets/logo.png?raw=true" alt="redux-sigma" height="30px" /></h1>
 
 [![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
 [![Test CI](https://github.com/moveaxlab/redux-sigma/workflows/Test%20CI/badge.svg?branch=master)](https://github.com/moveaxlab/redux-sigma/actions)
@@ -58,7 +58,7 @@ class MyStateMachine extends StateMachine {
 
 This state machine can be represented graphically as follows:
 
-![A simple state machine](https://github.com/moveaxlab/redux-sigma/raw/master/assets/simple-state-machine.png)
+![A simple state machine](https://github.com/moveaxlab/redux-sigma/raw/master/assets/simple-state-machine.png?raw=true)
 
 The `spec` field is the actual _specification_ of the state machine:
 an high level description of what its states are, and how the state machines
