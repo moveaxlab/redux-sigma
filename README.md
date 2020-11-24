@@ -3,7 +3,8 @@
 <a href="https://moveax.it"><img alt="moveax" height="24px" src="https://github.com/moveaxlab/redux-sigma/raw/master/assets/by-moveax.png?raw=true" /></a>
 
 [![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
-[![Test CI](https://github.com/moveaxlab/redux-sigma/workflows/Test%20CI/badge.svg?branch=master)](https://github.com/moveaxlab/redux-sigma/actions)
+[![Builds](https://img.shields.io/github/workflow/status/moveaxlab/redux-sigma/Test%20CI/master)](https://github.com/moveaxlab/redux-sigma/actions)
+[![Code coverage](https://img.shields.io/coveralls/github/moveaxlab/redux-sigma/master)](https://coveralls.io/github/moveaxlab/redux-sigma)
 
 `redux-sigma` is a library that allows implementation of state machines on top
 of `redux` and `redux-saga`.
