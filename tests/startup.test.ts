@@ -4,8 +4,12 @@ import { combineReducers } from 'redux';
 import { SagaTester } from '@moveaxlab/redux-saga-tester';
 import {
   StoreStateMachineContext,
-  StoreStateMachineState
+  StoreStateMachineState,
 } from '../src/spec/actions';
+import {
+  storeStmContextActionType,
+  storeStmStateActionType,
+} from '../src/constants';
 
 class SimpleStateMachine extends StateMachine {
   readonly name = 'simple_stm';
@@ -81,7 +85,7 @@ describe('Start and stop semantics', () => {
 
   test('context updates are ignored if the state machine is not running', () => {
     const event: StoreStateMachineState<string, string> = {
-      type: '@@REDUX_SIGMA/store-state',
+      type: storeStmStateActionType,
       payload: {
         name: stateMachine.name,
         state: 'state_1',
@@ -95,7 +99,7 @@ describe('Start and stop semantics', () => {
 
   test('state updates are ignored if the state machine is not running', () => {
     const event: StoreStateMachineContext<string, {}> = {
-      type: '@@REDUX_SIGMA/store-context',
+      type: storeStmContextActionType,
       payload: {
         name: stateMachine.name,
         context: {},
