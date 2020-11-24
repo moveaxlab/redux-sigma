@@ -19,22 +19,8 @@ import {
   storeStmContextActionType,
   storeStmStateActionType,
 } from './constants';
+import { StateMachineSpec } from './spec';
 import {
-  Activity,
-  AnyEvent,
-  Event,
-  StartStateMachineAction,
-  StateMachineInterface,
-  StateMachineSpec,
-  StmStorage,
-  StopStateMachineAction,
-  StoreStateMachineContext,
-  StoreStateMachineState,
-  TransitionSpec,
-  TransitionTrigger,
-} from './types';
-import {
-  isArray,
   isFunction,
   isGuardedTransition,
   isReactionSpec,
@@ -42,6 +28,18 @@ import {
   isStarted,
   isStateTransition,
 } from './typeGuards';
+import { AnyEvent, Event } from './spec/events';
+import { Activity } from './spec/activities';
+import { TransitionSpec, TransitionTrigger } from './spec/transitions';
+import { ReactionPolicy } from './spec/reactions';
+import { StmStorage } from './spec/storage';
+import {
+  StartStateMachineAction,
+  StopStateMachineAction,
+  StoreStateMachineContext,
+  StoreStateMachineState,
+} from './spec/actions';
+import { StateMachineInterface } from './spec/base';
 
 export abstract class StateMachine<
   E extends string = string,
@@ -65,6 +63,12 @@ export abstract class StateMachine<
 
   private transitionChannel!: Channel<AnyEvent<E>>;
 
+  /**
+   * Returns a redux action that will start this state machine when dispatched,
+   * with the initial context provided in input.
+   *
+   * @param context The initial context of the state machine.
+   */
   start = (context: C): StartStateMachineAction<N, C> => {
     const initialContext = produce(null, () => context) as C;
     return {
@@ -76,6 +80,9 @@ export abstract class StateMachine<
     };
   };
 
+  /**
+   * Returns a redux action that will stop this state machine when dispatched.
+   */
   stop = (): StopStateMachineAction<N> => {
     return {
       type: stopStmActionType,
@@ -85,6 +92,12 @@ export abstract class StateMachine<
     };
   };
 
+  /**
+   * Returns an action that will update the state of this state machine stored
+   * by the `stateReducer`.
+   *
+   * @param state The new state.
+   */
   private storeState = (state: S): StoreStateMachineState<N, S> => {
     return {
       type: storeStmStateActionType,
@@ -95,6 +108,12 @@ export abstract class StateMachine<
     };
   };
 
+  /**
+   * Returns an action that will update the context of this state machine stored
+   * by the `stateReducer`.
+   *
+   * @param context The new context.
+   */
   private storeContext = (context: C): StoreStateMachineContext<N, C> => {
     return {
       type: storeStmContextActionType,
@@ -105,6 +124,12 @@ export abstract class StateMachine<
     };
   };
 
+  /**
+   * Computes the new context and stores it using `storeContext`.
+   *
+   * @param newContext The new context, or an immer-style function that mutates
+   * the current context.
+   */
   protected *setContext(newContext: C | ((ctx: C) => void)) {
     if (isFunction(newContext)) {
       this._context = produce(this._context, newContext);
@@ -114,10 +139,21 @@ export abstract class StateMachine<
     yield putResolve(this.storeContext(this._context));
   }
 
+  /**
+   * Returns the current context.
+   */
   get context(): C {
     return this._context;
   }
 
+  /**
+   * This saga is responsible for starting and stopping this state machine.
+   * It listens to the `start` and `stop` actions returned by the methods of
+   * this state machine.
+   *
+   * This saga shouldn't be used directly: rely on `stateMachineStarterSaga`
+   * instead.
+   */
   *starterSaga(): Generator<StrictEffect, void> {
     while (true) {
       const action = (yield take(
@@ -144,9 +180,7 @@ export abstract class StateMachine<
   }
 
   /**
-   * Runs the State Machine described by the spec. To stop the State
-   * machine, cancel the task. Or, better still, rely on the
-   * `stateMachineStarterSaga` utility function.
+   * Runs the state machine described by this state machines' spec.
    */
   private *run(context: C): Generator<StrictEffect, void> {
     this._context = context;
@@ -160,7 +194,7 @@ export abstract class StateMachine<
       ])) as TransitionTrigger<S, E>;
 
       if (nextState.command) {
-        if (isArray(nextState.command)) {
+        if (Array.isArray(nextState.command)) {
           for (const saga of nextState.command) {
             yield call([this, saga], nextState.event);
           }
@@ -175,6 +209,13 @@ export abstract class StateMachine<
     }
   }
 
+  /**
+   * A generator that runs the "loop" for the current state.
+   * It listens to transition events while running `onEntry` activities and
+   * `reactions`, and starts sub state machines. As soon as a transition event
+   * is returned, the state loop is stopped, and the transition trigger is
+   * returned to the calling function.
+   */
   private *stateLoop(): Generator<StrictEffect, TransitionTrigger<S, E>> {
     try {
       const { transitions } = this.spec[this.currentState];
@@ -208,7 +249,7 @@ export abstract class StateMachine<
   /**
    * Waits for the first event matching a regular transition or a guarded
    * transition, and returns it together with the next state and the
-   * optional command that must be executed before transitioning.
+   * optional command (or commands) that must be executed before transitioning.
    */
   private *getNextState(): Generator<StrictEffect, TransitionTrigger<S, E>> {
     while (true) {
@@ -255,7 +296,7 @@ export abstract class StateMachine<
    * added to your application reducers if you need to access the state of a
    * State Machine somewhere in your application.
    *
-   * @param state  The current state (`null` if not running).
+   * @param state  The current state and context.
    * @param action The action taken by the reducer.
    */
   stateReducer = (
@@ -280,11 +321,13 @@ export abstract class StateMachine<
         } else {
           return state;
         }
+
       case stopStmActionType:
         return {
           state: null,
           context: undefined,
         };
+
       case storeStmContextActionType:
         if (!isStarted(state)) {
           return state;
@@ -294,6 +337,7 @@ export abstract class StateMachine<
             context: action.payload.context,
           };
         }
+
       case storeStmStateActionType:
         if (isStarted(state)) {
           return {
@@ -313,7 +357,7 @@ export abstract class StateMachine<
     const { onEntry } = this.spec[this.currentState];
 
     if (onEntry) {
-      if (isArray(onEntry)) {
+      if (Array.isArray(onEntry)) {
         for (const saga of onEntry) {
           this.runningTasks.push((yield fork([this, saga])) as Task);
         }
@@ -324,8 +368,8 @@ export abstract class StateMachine<
   }
 
   /**
-   * Starts and add the background task listening to reactions
-   * in the background task list
+   * Starts and adds the background tasks listening to reactions
+   * in the background task list.
    */
   private *registerToReactions(): Generator<StrictEffect, void> {
     const { reactions } = this.spec[this.currentState];
@@ -335,13 +379,9 @@ export abstract class StateMachine<
       for (const eventType of eventTypes) {
         const reaction = reactions[eventType]! as Activity<E>;
 
-        const activity = isReactionSpec(reaction)
-          ? reaction.activity
-          : reaction;
-
-        const policy = isReactionSpec(reaction)
-          ? reaction.policy
-          : REACTION_POLICY_ALL;
+        const [activity, policy] = isReactionSpec(reaction)
+          ? [reaction.activity, reaction.policy]
+          : [reaction, REACTION_POLICY_ALL as ReactionPolicy];
 
         let task: Task;
 
@@ -377,35 +417,37 @@ export abstract class StateMachine<
     }
   }
 
-  //Reactions Policies
-
   /**
-   * takes the first available event and process it. When done take the next emitted event of the same kind until task is cancelled
-   * @param e: the event we are waiting for
-   * @param activity: the activity to be executed once the event is received
+   * Implements the `first` reaction policy: once an event triggering a reaction
+   * is received, no other event are processed until the first event has
+   * complete its processing.
+   *
+   * @param eventType The event triggering the reaction
+   * @param activity The reaction activity
    */
   private *takeFirst(
-    e: E,
+    eventType: E,
     activity: Activity<E>
   ): Generator<StrictEffect, void> {
     while (true) {
-      const event = (yield take(e)) as AnyEvent<E>;
+      const event = (yield take(eventType)) as AnyEvent<E>;
       yield call([this, activity], event);
     }
   }
 
   /**
-   * takes every event e emitted and launches the activity with it.
-   * if another event e is emitted during activity execution
-   * previous processing is cancelled and a new one with the new event starts
-   * @param e: the event we are waiting for
-   * @param activity the activity to be executed once the event is received
+   * Implements the `last` reaction policy: events are processed as they come.
+   * If a new event is received while a reaction is running, the old reaction
+   * is stopped, and a new reaction starts running.
+   *
+   * @param eventType The event triggering the reaction
+   * @param activity The reaction activity
    */
   private *takeLast(
-    e: E,
+    eventType: E,
     activity: Activity<E>
   ): Generator<StrictEffect, Task> {
-    const channel = (yield actionChannel(e)) as Channel<AnyEvent<E>>;
+    const channel = (yield actionChannel(eventType)) as Channel<AnyEvent<E>>;
     let task: Task | null = null;
     while (true) {
       const event = (yield take(channel)) as AnyEvent<E>;
@@ -417,12 +459,17 @@ export abstract class StateMachine<
   }
 
   /**
-   * takes all event emitted one at time and sequentially launches activity
-   * @param e: the event we are waiting for
-   * @param activity the activity to be executed once the event is received
+   * Implements the `all` reaction policy: events that can trigger a reaction
+   * are stored in a queue, and processed sequentially.
+   *
+   * @param eventType The event triggering the reaction
+   * @param activity The reaction activity
    */
-  private *takeAll(e: E, activity: Activity<E>): Generator<StrictEffect, Task> {
-    const channel = (yield actionChannel(e)) as Channel<AnyEvent<E>>;
+  private *takeAll(
+    eventType: E,
+    activity: Activity<E>
+  ): Generator<StrictEffect, Task> {
+    const channel = (yield actionChannel(eventType)) as Channel<AnyEvent<E>>;
     while (true) {
       const event = (yield take(channel)) as AnyEvent<E>;
       yield call([this, activity], event);
@@ -430,8 +477,8 @@ export abstract class StateMachine<
   }
 
   /**
-   * Stops all running tasks. Used when exiting from a state or when the STM
-   * is cancelled.
+   * Stops all running tasks. Used when exiting from a state
+   * or when the state machine is stopped.
    */
   private *cancelRunningTasks(): Generator<StrictEffect, void> {
     yield cancel(this.runningTasks);
@@ -439,14 +486,14 @@ export abstract class StateMachine<
   }
 
   /**
-   * Starts all STMs.
+   * Starts all sub state machines for the current state..
    */
   private *startSubMachines(): Generator<StrictEffect, void> {
     let { subMachines } = this.spec[this.currentState];
 
     if (!subMachines) return;
 
-    if (!isArray(subMachines)) {
+    if (!Array.isArray(subMachines)) {
       subMachines = [subMachines];
     }
 
@@ -461,14 +508,14 @@ export abstract class StateMachine<
   }
 
   /**
-   * Stops all sub STMs.
+   * Stops all state machines for the current state.
    */
   private *stopSubMachines(): Generator<StrictEffect, void> {
     let { subMachines } = this.spec[this.currentState];
 
     if (!subMachines) return;
 
-    if (!isArray(subMachines)) {
+    if (!Array.isArray(subMachines)) {
       subMachines = [subMachines];
     }
 
@@ -488,7 +535,7 @@ export abstract class StateMachine<
     const { onExit } = this.spec[this.currentState];
 
     if (onExit) {
-      if (isArray(onExit)) {
+      if (Array.isArray(onExit)) {
         for (const saga of onExit) {
           yield call([this, saga]);
         }

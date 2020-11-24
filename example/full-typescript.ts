@@ -12,7 +12,7 @@ import {
 } from 'redux-saga/effects';
 import { API } from './api';
 import { storeStmStateActionType } from '../src/constants';
-import { StmStorage } from '../src/types';
+import { StmStorage } from '../src/spec/storage';
 
 interface Context {
   input?: string;

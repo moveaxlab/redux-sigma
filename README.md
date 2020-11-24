@@ -1,4 +1,4 @@
-<h1>redux sigma <img src="https://github.com/moveaxlab/redux-sigma/blob/master/assets/logo.png?raw=true" alt="redux-sigma" height="30px" /></h1>
+# redux-sigma
 
 <a href="https://moveax.it"><img alt="moveax" height="24px" src="https://github.com/moveaxlab/redux-sigma/raw/master/assets/by-moveax.png?raw=true" /></a>
 
@@ -22,6 +22,8 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
 You can read what features `redux-sigma` offers in the
 [docs](https://github.com/moveaxlab/redux-sigma/tree/master/docs),
 or you can start by reading the quick start below.
+If you want to look at a more detailed example,
+check out the [example](https://github.com/moveaxlab/redux-sigma/tree/master/example) folder.
 
 ## Installation
 
@@ -153,9 +155,4 @@ console.log(store.getState().my_state_machine);
 
 The state and the context of the state machines will be updated independently
 during the state machine lifetime, according to its specification.
-
-You can find a more detailed example in the [example](https://github.com/moveaxlab/redux-sigma/tree/master/example) folder.
-
----
-
 

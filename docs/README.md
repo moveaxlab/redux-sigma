@@ -1,5 +1,8 @@
 # redux-sigma docs
 
+This document contains an explanation of what features of state machines are offered
+by `redux-sigma`, and what is the semantics of all the features.
+
 ### Table of Contents
 
 - [Activities](#activities)

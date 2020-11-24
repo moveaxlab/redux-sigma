@@ -2,7 +2,10 @@ import { StateMachine, stateMachineStarterSaga } from '../src';
 import { put } from 'redux-saga/effects';
 import { combineReducers } from 'redux';
 import { SagaTester } from '@moveaxlab/redux-saga-tester';
-import { StoreStateMachineContext, StoreStateMachineState } from '../src/types';
+import {
+  StoreStateMachineContext,
+  StoreStateMachineState
+} from '../src/spec/actions';
 
 class SimpleStateMachine extends StateMachine {
   readonly name = 'simple_stm';

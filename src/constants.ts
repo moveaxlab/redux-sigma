@@ -1,10 +1,10 @@
-export const startStmActionType = '@@REDUX_SIGMA/start-stm';
+export const startStmActionType = '@@redux-sigma/start-stm';
 
-export const stopStmActionType = '@@REDUX_SIGMA/stop-stm';
+export const stopStmActionType = '@@redux-sigma/stop-stm';
 
-export const storeStmStateActionType = '@@REDUX_SIGMA/store-state';
+export const storeStmStateActionType = '@@redux-sigma/store-state';
 
-export const storeStmContextActionType = '@@REDUX_SIGMA/store-context';
+export const storeStmContextActionType = '@@redux-sigma/store-context';
 
 export const REACTION_POLICY_FIRST = 'REACTION_POLICY_FIRST';
 

@@ -1,17 +1,55 @@
-import { not } from '../src';
+import { and, not, or } from '../src';
 
-function someCondition(a: number, b: number) {
+function firstGreaterThanSecond(a: number, b: number): boolean {
   return a > b;
 }
 
-it('tests the not function', () => {
-  const negatedCondition = not(someCondition);
+function greaterThanFive(a: number): boolean {
+  return a > 5;
+}
 
-  expect(someCondition(4, 5)).toBeFalse();
+function lessThanTen(a: number): boolean {
+  return a < 10;
+}
 
-  expect(negatedCondition(4, 5)).toBeTrue();
+function greaterThanTwenty(a: number): boolean {
+  return a > 20;
+}
 
-  expect(someCondition(5, 4)).toBeTrue();
+describe('Test guard utilities', () => {
+  expect(firstGreaterThanSecond(4, 5)).toBeFalse();
+  expect(firstGreaterThanSecond(5, 4)).toBeTrue();
 
-  expect(negatedCondition(5, 4)).toBeFalse();
+  expect(greaterThanFive(4)).toBeFalse();
+  expect(greaterThanFive(6)).toBeTrue();
+
+  expect(lessThanTen(9)).toBeTrue();
+  expect(lessThanTen(11)).toBeFalse();
+
+  expect(greaterThanTwenty(10)).toBeFalse();
+  expect(greaterThanTwenty(30)).toBeTrue();
+
+  test('not utility works', () => {
+    const secondGreaterThanFirst = not(firstGreaterThanSecond);
+
+    expect(secondGreaterThanFirst(4, 5)).toBeTrue();
+
+    expect(secondGreaterThanFirst(5, 4)).toBeFalse();
+  });
+
+  test('and utility works', () => {
+    const betweenFiveAndTen = and(greaterThanFive, lessThanTen);
+
+    expect(betweenFiveAndTen(6)).toBeTrue();
+    expect(betweenFiveAndTen(11)).toBeFalse();
+    expect(betweenFiveAndTen(3)).toBeFalse();
+  });
+
+  test('or utility works', () => {
+    const lessThanTenOrMoreThanTwenty = or(lessThanTen, greaterThanTwenty);
+
+    expect(lessThanTenOrMoreThanTwenty(5)).toBeTrue();
+    expect(lessThanTenOrMoreThanTwenty(15)).toBeFalse();
+    expect(lessThanTenOrMoreThanTwenty(30)).toBeTrue();
+  });
 });

@@ -6,24 +6,28 @@ import {
   storeStmContextActionType,
   storeStmStateActionType,
 } from './constants';
-import { StateMachineInterface } from './types';
 import { AnyAction } from 'redux';
+import { StateMachineInterface } from './spec/base';
 
 /* istanbul ignore next */
-/**
- * Prints a warning when an unknown STM is started or stopped.
- * @param action - The start/stop action that was dispatched.
- */
 function* reportUnknownStateMachine(action: AnyAction) {
   // eslint-disable-next-line no-console
   yield call(console.warn, `Unkwnown state machine ${action.payload.name}`);
 }
 
 /**
- * Creates a saga that starts and stops STMs in response to
- * startStateMachine and stopStateMachine actions dispatched to redux. A STM
- * cannot be started more than once.
- * @param stms - An array of StateMachine instances.
+ * Creates a saga that runs the `starterSaga` for the state machines
+ * given in input.
+ *
+ * It does some additional checks for you:
+ *
+ * - if two or more state machines have the same identifier (their name),
+ *   this saga throws an error, since running more than one instance of
+ *   the same state machine _will_ result in undefined behaviour
+ * - if you try to start or stop a state machine that was not passed
+ *   to this saga, it will log an error in console (in development only)
+ *
+ * @param stms An array of StateMachine instances.
  */
 export function* stateMachineStarterSaga(
   ...stms: StateMachineInterface<any, any>[]

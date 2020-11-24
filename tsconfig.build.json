@@ -4,7 +4,6 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "declaration": true,
-    "removeComments": true,
     "declarationDir": "./types"
   },
   "exclude": [

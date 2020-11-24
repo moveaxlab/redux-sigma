@@ -1,16 +1,11 @@
+import { Activity } from './spec/activities';
 import {
-  Activity,
   GuardedTransition,
-  ReactionSpec,
-  StartedStmStorage,
-  StmStorage,
   Transition,
   TransitionSpec,
-} from './types';
-
-export function isArray<T>(elem: T | T[]): elem is T[] {
-  return (elem as T[]) instanceof Array;
-}
+} from './spec/transitions';
+import { ReactionSpec } from './spec/reactions';
+import { StartedStmStorage, StmStorage } from './spec/storage';
 
 export function isStateTransition<S extends string, E extends string, C>(
   value: TransitionSpec<S, E, C>
