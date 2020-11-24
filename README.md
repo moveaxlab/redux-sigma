@@ -4,7 +4,7 @@
 [![Test CI](https://github.com/moveaxlab/redux-sigma/workflows/Test%20CI/badge.svg?branch=master)](https://github.com/moveaxlab/redux-sigma/actions)
 
 `redux-sigma` is a library that allows implementation of state machines on top
-of `redux` and `redux-saga`.
+of `redux` and `redux-saga` developed with :heart: by [**moveax_**](https://moveax.it/).
 
 State machines implemented with `redux-sigma` react to events dispatched via `redux`,
 and their state can be stored inside `redux` using a dedicated reducer.
@@ -17,6 +17,10 @@ the [FSA](https://github.com/redux-utilities/flux-standard-action) pattern.
 
 `redux-sigma` has extensive TypeScript support, and we recommend using it with TypeScript.
 
+You can read what features `redux-sigma` offers in the
+[docs](https://github.com/moveaxlab/redux-sigma/tree/master/docs),
+or you can start by reading the quick start below.
+
 ## Installation
 
 ```bash
@@ -26,7 +30,7 @@ $ yarn add redux-sigma
 `redux-sigma` has `redux` and `redux-saga` as peer dependencies.
 Remember to include them in your project.
 
-## Basic usage
+## Quick Start
 
 State machines in `redux-sigma` must extend a generic `StateMachine` class.
 
@@ -71,6 +75,8 @@ when it first starts.
 The `name` field is what identifies state machines: for `redux-sigma`,
 two state machines cannot have the same name.
 
+### Running your state machine
+
 To use a state machine, you first need to instantiate it:
 
 ```typescript
@@ -113,6 +119,8 @@ the state machine is started only once.
 The same is true for `stop` actions.
 To restart a running state machine, dispatch a `stop` action followed by a `start` action.
 
+### Reading data from your state machine
+
 To have the state of your state machines available inside your `redux` store,
 use the `stateReducer` of the state machine:
 
@@ -144,9 +152,8 @@ console.log(store.getState().my_state_machine);
 The state and the context of the state machines will be updated independently
 during the state machine lifetime, according to its specification.
 
-You can find a more detailed example in the [`example`](https://github.com/moveaxlab/redux-sigma/tree/master/example) folder,
-and you can read what features `redux-sigma` offers in the [`docs`](https://github.com/moveaxlab/redux-sigma/tree/master/docs) folder.
+You can find a more detailed example in the [example](https://github.com/moveaxlab/redux-sigma/tree/master/example) folder.
 
 ---
 
-developed with :heart: by [moveax](https://moveax.it/)
+
