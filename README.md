@@ -1,6 +1,6 @@
 <h1>redux sigma <img src="https://github.com/moveaxlab/redux-sigma/blob/master/assets/logo.png?raw=true" alt="redux-sigma" height="30px" /></h1>
 
-<a href="https://moveax.it"><img alt="moveax" height="17px" src="https://github.com/moveaxlab/redux-sigma/raw/master/assets/by-moveax.png?raw=true" /></a>
+<a href="https://moveax.it"><img alt="moveax" height="24px" src="https://github.com/moveaxlab/redux-sigma/raw/master/assets/by-moveax.png?raw=true" /></a>
 
 [![npm](https://img.shields.io/npm/v/redux-sigma)](https://www.npmjs.com/package/redux-sigma)
 [![Test CI](https://github.com/moveaxlab/redux-sigma/workflows/Test%20CI/badge.svg?branch=master)](https://github.com/moveaxlab/redux-sigma/actions)
