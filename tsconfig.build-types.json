@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "removeComments": false,
+    "emitDeclarationOnly": true,
+    "outDir": "./types",
+    "rootDir": "./src",
+    "declaration": true
+  },
+  "exclude": [
+    "node_modules",
+    "example",
+    "lib",
+    "tests"
+  ]
+}

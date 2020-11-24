@@ -4,10 +4,16 @@ import autoExternal from 'rollup-plugin-auto-external';
 export default [
   {
     input: 'src/index.ts',
-    output: {
-      file: 'lib/index.js',
-      format: 'cjs',
-    },
+    output: [
+      {
+        file: 'lib/index.js',
+        format: 'cjs',
+      },
+      {
+        file: 'lib/index.es.js',
+        format: 'es',
+      },
+    ],
     external: ['redux-saga/effects'],
     plugins: [
       autoExternal(),
@@ -19,14 +25,13 @@ export default [
   {
     input: 'src/index.ts',
     output: {
-      file: 'lib/index.es.js',
-      format: 'es',
+      file: 'types/index.d.ts',
     },
     external: ['redux-saga/effects'],
     plugins: [
       autoExternal(),
       ts({
-        tsconfig: './tsconfig.es-build.json',
+        tsconfig: './tsconfig.build-types.json',
         transpileOnly: true,
       }),
     ],

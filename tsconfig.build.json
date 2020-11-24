@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
-    "declaration": true,
-    "declarationDir": "./types"
+    "removeComments": true,
+    "declaration": false
   },
   "exclude": [
     "node_modules",
