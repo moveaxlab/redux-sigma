@@ -178,7 +178,7 @@ class MyStateMachine extends StateMachine {
 
 Simple transitions can be illustrated as follows:
 
-![A state machine with a simple transition](assets/simple-transition.png)
+![A state machine with a simple transition](https://github.com/moveaxlab/redux-sigma/raw/master/assets/simple-transition.png?raw=true)
 
 The transition from `state_1` to `state_2` will be triggered by any `redux` action
 having a `type` equal to `'event_1'`:
@@ -220,7 +220,7 @@ class MyStateMachine extends StateMachine {
 
 Transitions paired with commands can be represented in this way:
 
-![A state machine with a command on a transition](assets/transition-with-command.png)
+![A state machine with a command on a transition](https://github.com/moveaxlab/redux-sigma/raw/master/assets/transition-with-command.png?raw=true)
 
 The `target` in the `event_2` transition identifies the state that your state machine will reach
 after executing the `command`.
@@ -271,7 +271,7 @@ class MyStateMachine extends StateMachine {
 
 Guarded transitions are represented with the guard condition between square brackets:
 
-![A state machine with guarded transitions](assets/guarded-transitions.png)
+![A state machine with guarded transitions](https://github.com/moveaxlab/redux-sigma/raw/master/assets/guarded-transitions.png?raw=true)
 
 For `event_1`, the transition will be triggered only if the `guard` function returns `true`,
 otherwise nothing will happen.
@@ -318,7 +318,7 @@ class MyStateMachine {
 
 Reactions are shown inside the state, separated from the name:
 
-![A state with a reaction](assets/reactions.png)
+![A state with a reaction](https://github.com/moveaxlab/redux-sigma/raw/master/assets/reactions.png?raw=true)
 
 If your state machine receives an event that triggers a transition while a reaction is running,
 `redux-sigma` will stop that reaction using the [`cancel`](https://redux-saga.js.org/docs/api/#canceltask)
@@ -344,7 +344,7 @@ You may find yourself needing a different behaviour than the default.
 
 This image illustrates the three policies:
 
-![Reaction policies illustration](assets/policies.png)
+![Reaction policies illustration](https://github.com/moveaxlab/redux-sigma/raw/master/assets/policies.png?raw=true)
 
 Reaction policies can be specified in the following way:
 
@@ -385,7 +385,7 @@ class MyStateMachine extends StateMachine {
 
 `onEntry` and `onExit` activities are represented just like other reactions:
 
-![A state with onEntry and onExit activities](./assets/onentry-onexit.png)
+![A state with onEntry and onExit activities](https://github.com/moveaxlab/redux-sigma/raw/master/assets/onentry-onexit.png?raw=true)
 
 The `onEntry` activities will start running as soon as your state machine enters the state.
 While `onEntry` activities are running, the state machine can change state if it receives

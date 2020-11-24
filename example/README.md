@@ -5,7 +5,7 @@ This folder contains an example taken from our talk at the
 
 The example implements this state machine:
 
-![Search state machine example](../assets/search-example.png)
+![Search state machine example](https://github.com/moveaxlab/redux-sigma/raw/master/assets/search-example.png?raw=true)
 
 There are two implementations in this folder:
 
