@@ -83,7 +83,7 @@ describe('Start and stop semantics', () => {
     expect(tester.getState().stateMachine.state).toEqual(null);
   });
 
-  test('context updates are ignored if the state machine is not running', () => {
+  test('state updates are ignored if the state machine is not running', () => {
     const event: StoreStateMachineState<string, string> = {
       type: storeStmStateActionType,
       payload: {
@@ -97,7 +97,7 @@ describe('Start and stop semantics', () => {
     expect(tester.getState().stateMachine.state).toEqual(null);
   });
 
-  test('state updates are ignored if the state machine is not running', () => {
+  test('context updates are ignored if the state machine is not running', () => {
     const event: StoreStateMachineContext<string, {}> = {
       type: storeStmContextActionType,
       payload: {
