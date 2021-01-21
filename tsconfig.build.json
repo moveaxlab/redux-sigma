@@ -10,6 +10,7 @@
     "node_modules",
     "example",
     "lib",
-    "tests"
+    "tests",
+    "types"
   ]
 }
