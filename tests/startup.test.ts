@@ -7,6 +7,7 @@ import {
   StoreStateMachineState,
 } from '../src/spec/actions';
 import {
+  stmStartedActionType,
   storeStmContextActionType,
   storeStmStateActionType,
 } from '../src/constants';
@@ -63,11 +64,13 @@ describe('Start and stop semantics', () => {
     tester.dispatch(stateMachine.start({}));
 
     expect(tester.numCalled('stm_started')).toEqual(1);
+    expect(tester.numCalled(stmStartedActionType)).toEqual(1);
 
     tester.dispatch(stateMachine.start({}));
     tester.dispatch(stateMachine.start({}));
 
     expect(tester.numCalled('stm_started')).toEqual(1);
+    expect(tester.numCalled(stmStartedActionType)).toEqual(1);
   });
 
   test('multiple stop actions have no effect on the state machine', () => {

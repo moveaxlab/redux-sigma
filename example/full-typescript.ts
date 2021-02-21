@@ -173,6 +173,8 @@ sagaMiddleware.run(stateMachineStarterSaga, stateMachine);
 function* rootSaga(): Generator<StrictEffect, void> {
   yield put(stateMachine.start({}));
 
+  yield put({ type: 'wait for redux saga to flush action queue ' });
+
   let state = (yield select((state: Store) => state.search)) as StmStorage<
     States,
     Context

@@ -8,6 +8,7 @@ import {
   fork,
   put,
   putResolve,
+  race,
   take,
 } from 'redux-saga/effects';
 import {
@@ -15,6 +16,8 @@ import {
   REACTION_POLICY_FIRST,
   REACTION_POLICY_LAST,
   startStmActionType,
+  stmStartedActionType,
+  stmStoppedActionType,
   stopStmActionType,
   storeStmContextActionType,
   storeStmStateActionType,
@@ -35,11 +38,14 @@ import { ReactionPolicy } from './spec/reactions';
 import { StmStorage } from './spec/storage';
 import {
   StartStateMachineAction,
+  StateMachineStartedAction,
+  StateMachineStoppedAction,
   StopStateMachineAction,
   StoreStateMachineContext,
   StoreStateMachineState,
 } from './spec/actions';
 import { StateMachineInterface } from './spec/base';
+import { buffers } from 'redux-saga';
 
 export abstract class StateMachine<
   E extends string = string,
@@ -86,6 +92,33 @@ export abstract class StateMachine<
   stop = (): StopStateMachineAction<N> => {
     return {
       type: stopStmActionType,
+      payload: {
+        name: this.name,
+      },
+    };
+  };
+
+  /**
+   * Returns a redux action that signals that the state machine
+   * was successfully started.
+   */
+  private started = (context: C): StateMachineStartedAction<N, C> => {
+    return {
+      type: stmStartedActionType,
+      payload: {
+        name: this.name,
+        context,
+      },
+    };
+  };
+
+  /**
+   * Returns a redux action that signals that the state machine
+   * was successfully stopped.
+   */
+  private stopped = (): StateMachineStoppedAction<N> => {
+    return {
+      type: stmStoppedActionType,
       payload: {
         name: this.name,
       },
@@ -148,34 +181,30 @@ export abstract class StateMachine<
 
   /**
    * This saga is responsible for starting and stopping this state machine.
-   * It listens to the `start` and `stop` actions returned by the methods of
-   * this state machine.
+   * It listens to the `start` actions returned by the methods of
+   * this state machine, and relies on the `run` method to catch `stop` actions.
    *
    * This saga shouldn't be used directly: rely on `stateMachineStarterSaga`
    * instead.
    */
   *starterSaga(): Generator<StrictEffect, void> {
+    const startChannel = (yield actionChannel(
+      (action: AnyAction) =>
+        action.type == startStmActionType && action.payload.name == this.name,
+      buffers.sliding(1)
+    )) as Channel<StartStateMachineAction<N, C>>;
+
     while (true) {
-      const action = (yield take(
-        (action: AnyAction) =>
-          action.type === startStmActionType &&
-          action.payload &&
-          action.payload.name === this.name
-      )) as StartStateMachineAction<N, C>;
+      const action = (yield take(startChannel)) as StartStateMachineAction<
+        N,
+        C
+      >;
 
-      const task = (yield fork(
-        [this, this.run],
-        action.payload.context
-      )) as Task;
+      yield put(this.started(action.payload.context));
 
-      yield take(
-        (action: AnyAction) =>
-          action.type === stopStmActionType &&
-          action.payload &&
-          action.payload.name === this.name
-      );
+      yield call([this, this.run], action.payload.context);
 
-      yield cancel(task);
+      yield put(this.stopped());
     }
   }
 
@@ -187,11 +216,20 @@ export abstract class StateMachine<
 
     this.currentState = this.initialState;
 
+    const stopChannel = (yield actionChannel(
+      (action: AnyAction) =>
+        action.type == stopStmActionType && action.payload.name == this.name
+    )) as Channel<StopStateMachineAction<N>>;
+
     while (true) {
-      const nextState = (yield call([
-        this,
-        this.stateLoop,
-      ])) as TransitionTrigger<S, E>;
+      const nextState = (yield call([this, this.stateLoop], stopChannel)) as
+        | TransitionTrigger<S, E>
+        | undefined;
+
+      // no next state was returned => a stop event was received, exit
+      if (!nextState) {
+        return;
+      }
 
       if (nextState.command) {
         if (Array.isArray(nextState.command)) {
@@ -215,8 +253,14 @@ export abstract class StateMachine<
    * `reactions`, and starts sub state machines. As soon as a transition event
    * is returned, the state loop is stopped, and the transition trigger is
    * returned to the calling function.
+   *
+   * The loop listens for both transition events and the stop event.
+   * The first event that is received exits the loop: a transition event
+   * returns a TransitionTrigger, while a stop event returns nothing.
    */
-  private *stateLoop(): Generator<StrictEffect, TransitionTrigger<S, E>> {
+  private *stateLoop(
+    stopChannel: Channel<StopStateMachineAction<N>>
+  ): Generator<StrictEffect, TransitionTrigger<S, E> | undefined> {
     try {
       const { transitions } = this.spec[this.currentState];
 
@@ -236,13 +280,18 @@ export abstract class StateMachine<
         (yield fork([this, this.registerToReactions])) as Task
       );
 
-      yield* this.startSubMachines();
+      yield call([this, this.startSubMachines]);
 
-      return (yield call([this, this.getNextState])) as TransitionTrigger<S, E>;
+      const { nextState } = (yield race({
+        nextState: call([this, this.getNextState]),
+        stop: take(stopChannel),
+      })) as { nextState: TransitionTrigger<S, E> | undefined };
+
+      return nextState;
     } finally {
-      yield* this.cancelRunningTasks();
-      yield* this.stopSubMachines();
-      yield* this.runOnExitActivities();
+      yield call([this, this.cancelRunningTasks]);
+      yield call([this, this.stopSubMachines]);
+      yield call([this, this.runOnExitActivities]);
     }
   }
 
@@ -305,6 +354,8 @@ export abstract class StateMachine<
       | StoreStateMachineState<N, S>
       | StartStateMachineAction<N, C>
       | StopStateMachineAction<N>
+      | StateMachineStoppedAction<N>
+      | StateMachineStartedAction<N, C>
       | StoreStateMachineContext<N, C>
   ): StmStorage<S, C> => {
     if (action.payload?.name !== this.name) {
@@ -312,15 +363,11 @@ export abstract class StateMachine<
     }
 
     switch (action.type) {
-      case startStmActionType:
-        if (!isStarted(state)) {
-          return {
-            state: this.initialState,
-            context: action.payload.context,
-          };
-        } else {
-          return state;
-        }
+      case stmStartedActionType:
+        return {
+          state: this.initialState,
+          context: action.payload.context,
+        };
 
       case stopStmActionType:
         return {
@@ -347,6 +394,9 @@ export abstract class StateMachine<
         } else {
           return state;
         }
+
+      default:
+        return state;
     }
   };
 

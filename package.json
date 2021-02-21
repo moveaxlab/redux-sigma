@@ -28,7 +28,10 @@
     "test": "npm-run-all test:*",
     "test:types": "tsc -p tsconfig.json",
     "test:lint": "yarn eslint --ext .ts src",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "test:example": "npm-run-all test:example:*",
+    "test:example:light": "ts-node ./example/light-typescript.ts",
+    "test:example:full": "ts-node ./example/full-typescript.ts"
   },
   "bugs": {
     "url": "https://github.com/moveaxlab/redux-sigma/issues"

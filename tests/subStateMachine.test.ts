@@ -114,4 +114,28 @@ describe('Sub state machines semantics', () => {
     expect(tester.getState().firstSub.state).toEqual(null);
     expect(tester.getState().secondSub.state).toEqual(null);
   });
+
+  test('quick restart works', () => {
+    expect(tester.getState().parent.state).toEqual(null);
+    expect(tester.getState().firstSub.state).toEqual(null);
+    expect(tester.getState().secondSub.state).toEqual(null);
+
+    tester.dispatch(parentStateMachine.start({}));
+
+    expect(tester.getState().parent.state).toEqual('state_1');
+    expect(tester.getState().firstSub.state).toEqual('state_1');
+    expect(tester.getState().secondSub.state).toEqual('state_1');
+
+    expect(tester.numCalled(startStmActionType)).toEqual(3);
+
+    tester.dispatch(parentStateMachine.stop());
+    tester.dispatch(parentStateMachine.start({}));
+
+    expect(tester.getState().parent.state).toEqual('state_1');
+    expect(tester.getState().firstSub.state).toEqual('state_1');
+    expect(tester.getState().secondSub.state).toEqual('state_1');
+
+    expect(tester.numCalled(stopStmActionType)).toEqual(3);
+    expect(tester.numCalled(startStmActionType)).toEqual(6);
+  });
 });

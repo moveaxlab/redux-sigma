@@ -1,6 +1,10 @@
 export const startStmActionType = '@@redux-sigma/start-stm';
 
+export const stmStartedActionType = '@@redux-sigma/stm-started';
+
 export const stopStmActionType = '@@redux-sigma/stop-stm';
+
+export const stmStoppedActionType = '@@redux-sigma/stm-stopped';
 
 export const storeStmStateActionType = '@@redux-sigma/store-state';
 

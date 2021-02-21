@@ -139,6 +139,8 @@ sagaMiddleware.run(stateMachineStarterSaga, stateMachine);
 function* rootSaga() {
   yield put(stateMachine.start({}));
 
+  yield put({ type: 'wait for redux saga to flush action queue ' });
+
   let state = yield select(state => state.search);
 
   console.log('initial state:', state.state);
