@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StrictEffect } from 'redux-saga/effects';
 import { StateMachineInterface } from './spec/base';
 import { SubStateMachineWithContext } from './spec/subMachines';
@@ -18,7 +19,7 @@ import { SubStateMachineWithContext } from './spec/subMachines';
  * used inside another STM spec
  */
 export function bindStm<SM extends string = string, SC = unknown>(
-  stm: StateMachineInterface<SM, SC>,
+  stm: StateMachineInterface<any, SM, SC>,
   contextBuilder: (() => SC) | (() => Generator<StrictEffect, SC>)
 ): SubStateMachineWithContext<SM, SC> {
   return {

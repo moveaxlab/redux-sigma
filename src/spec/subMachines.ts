@@ -8,7 +8,7 @@ import { StrictEffect } from 'redux-saga/effects';
  * can be assigned to its context.
  */
 export interface SubStateMachineWithoutContext<SM extends string>
-  extends StateMachineInterface<SM, {}> {}
+  extends StateMachineInterface<any, SM, {}> {}
 
 /**
  * This is a state machine that can only be used as a sub state machine
@@ -19,7 +19,7 @@ export interface SubStateMachineWithoutContext<SM extends string>
  * the initial context for this state machine.
  */
 export interface SubStateMachineWithContext<SM extends string, SC = any> {
-  stm: StateMachineInterface<SM, SC>;
+  stm: StateMachineInterface<any, SM, SC>;
   contextBuilder: (() => SC) | (() => Generator<StrictEffect, SC>);
 }
 

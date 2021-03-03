@@ -30,7 +30,7 @@ function* reportUnknownStateMachine(action: AnyAction) {
  * @param stms An array of StateMachine instances.
  */
 export function* stateMachineStarterSaga(
-  ...stms: StateMachineInterface<any, any>[]
+  ...stms: StateMachineInterface<any, any, any>[]
 ) {
   const duplicateStm = stms
     .map(stm => stm.name)

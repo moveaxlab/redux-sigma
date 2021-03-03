@@ -54,7 +54,7 @@ export abstract class StateMachine<
   C = {},
   IS extends S = S,
   N extends SM = SM
-> implements StateMachineInterface<SM, C> {
+> implements StateMachineInterface<S, SM, C> {
   abstract readonly name: N;
 
   private _context!: C;
