@@ -1,6 +1,6 @@
 {
   "name": "redux-sigma",
-  "version": "0.8.0-beta.1",
+  "version": "0.8.0-beta.2",
   "description": "A state machine library for redux and redux-saga.",
   "contributors": [
     "Fabrizio Cavaniglia <fabrizio.cavaniglia@moveax.it>",
